@@ -22,13 +22,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-class SaleRegisterDataSource {
+class ServiceFormDataSource {
 
     private ArrayList<ServiceFieldsDto> serviceFieldsDtos;
     private Context mContext;
     private SaleRegisterDataSourceListener sourceListner;
 
-    public SaleRegisterDataSource(Context mContext, SaleRegisterDataSourceListener sourceListner) {
+    public ServiceFormDataSource(Context mContext, SaleRegisterDataSourceListener sourceListner) {
         this.mContext = mContext;
         this.sourceListner = sourceListner;
     }

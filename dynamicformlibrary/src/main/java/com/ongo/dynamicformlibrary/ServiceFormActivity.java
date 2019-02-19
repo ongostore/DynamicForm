@@ -59,9 +59,9 @@ import java.util.Map;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPresenter.SaleRegisterListener {
+public class ServiceFormActivity extends BaseActivity implements ServiceFormPresenter.SaleRegisterListener {
     public static final int REQUEST_FILE_SELECT = 1;
-    final static String TAG = "SaleRegisterActivity";
+    final static String TAG = "ServiceFormActivity";
     private static final int RP_READ_STORAGE = 126;
     private static final int REQ_LOCATION_CODE = 1432;
     private static final int REQ_CAMERA_CODE = 1452;
@@ -75,7 +75,7 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
     Button submitBTN;
     LinearLayout rentLL1, sell, photosLL, tempImage1, linearLayout;
     EditText withFuel, withoutFuel, price;
-    SaleRegisterPresenter saleRegisterPresenter;
+    ServiceFormPresenter serviceFormPresenter;
     ImageView image1, image2, image3, image4, image5, image6;
     ImageView tempImage2, tempImage3, tempImage4, tempImage5, tempImage6;
     ListView lView;
@@ -99,12 +99,12 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
     private String postType;
     private ArrayList<String> selectedList;
 
-//    public SaleRegisterFragment() {
+//    public ServiceFormFragment() {
 //        // Required empty public constructor
 //    }
 
-//    public static SaleRegisterActivity newInstance() {
-//        SaleRegisterActivity fragment = new SaleRegisterActivity();
+//    public static ServiceFormActivity newInstance() {
+//        ServiceFormActivity fragment = new ServiceFormActivity();
 //        Bundle args = new Bundle();
 ////        args.putString(ARG_PARAM1, param1);
 ////        args.putString(ARG_PARAM2, param2);
@@ -114,21 +114,25 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setContentView(R.layout.fragment_sale_register);
+        setContentView(R.layout.fragment_service_form);
         super.onCreate(savedInstanceState);
         mContext = this;
-        saleRegisterPresenter = new SaleRegisterPresenter(SaleRegisterActivity.this, this);
+        serviceFormPresenter = new ServiceFormPresenter(ServiceFormActivity.this, this);
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             postType = bundle.getString("typeName");
             titleTV.setText(postType);
             itemJob = bundle.getString("jsonObj");
             if (itemJob != null) {
-                OnGoConstants.editFieldsHASHMAP = saleRegisterPresenter.getHashMap(itemJob);
-                OnGoConstants.editFieldsImagesHashMap = saleRegisterPresenter.getImagesHashMap(itemJob);
+                OnGoConstants.editFieldsHASHMAP = serviceFormPresenter.getHashMap(itemJob);
+                OnGoConstants.editFieldsImagesHashMap = serviceFormPresenter.getImagesHashMap(itemJob);
             }
         }
-        saleRegisterPresenter.getServiceFields(postType);
+        if (Utils.isNetworkAvailable(mContext)) {
+            serviceFormPresenter.getServiceFields(postType);
+        } else {
+            showMessage(getString(R.string.no_network));
+        }
 
     }
 
@@ -197,13 +201,17 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
         photosLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saleRegisterPresenter.getImagesList();
+                serviceFormPresenter.getImagesList();
             }
         });
         submitBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getValues(true);
+                if (serviceFieldsDtos != null && serviceFieldsDtos.size() > 0)
+                    getValues(true);
+                else {
+                    showMessage("Form not available");
+                }
             }
         });
     }
@@ -374,7 +382,7 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
                             final ArrayList<String> finalStrings = keysArray;
                             final ArrayList<String> finalValuesArray = valuesArray;
                             final TextView finalEditText = textViewMain;
-                            String dependencyName = saleRegisterPresenter.getDependencyNameList(serviceFieldsDtos, tagName);
+                            String dependencyName = serviceFormPresenter.getDependencyNameList(serviceFieldsDtos, tagName);
                             DependentDTO dependentDTO = new DependentDTO();
                             dependentDTO.setDependentName(dependencyName);
                             dependentDTO.setKeyArray(keysArray);
@@ -387,7 +395,7 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
                                     public void onClick(View v) {
                                         ArrayList<String> subKeysArray = new ArrayList<>();
                                         ArrayList<String> subValuesArray = new ArrayList<>();
-                                        DependentDTO dependentDTO1 = saleRegisterPresenter.checkDependency(dependentDTOS, tagName);
+                                        DependentDTO dependentDTO1 = serviceFormPresenter.checkDependency(dependentDTOS, tagName);
                                         if (dependentDTO1 != null) {
                                             String selectedId = dependentDTO1.getSelectedId();
                                             if (TextUtils.isEmpty(selectedId)) {
@@ -413,7 +421,7 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
                                         }
                                     }
                                 });
-                            }else if (keysArray != null && isMultiset) {
+                            } else if (keysArray != null && isMultiset) {
                                 textViewMain.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -437,39 +445,39 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
 
                 } else {
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                        LinearLayout innerLinearLayout = ServiceUtils.getSelectionView(mandatory, mContext, params, tagName, isMultiset, stringArray, new ServiceUtils.SelectionInterface() {
-                            @Override
-                            public void selectionListener(boolean isMultiset, String[] stringArray, TextView textViewMain) {
-                                final String[] finalStrings = stringArray;
-                                final TextView finalEditText = textViewMain;
-                                if (stringArray != null && isMultiset) {
-                                    textViewMain.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            showMultiSelection(tagName, finalStrings, finalEditText, new MultiSelectInterface() {
-                                                @Override
-                                                public void multiSelectListener(String selectedName) {
-                                                    finalEditText.setText(selectedName);
-                                                }
-                                            });
-                                        }
-                                    });
+                    LinearLayout innerLinearLayout = ServiceUtils.getSelectionView(mandatory, mContext, params, tagName, isMultiset, stringArray, new ServiceUtils.SelectionInterface() {
+                        @Override
+                        public void selectionListener(boolean isMultiset, String[] stringArray, TextView textViewMain) {
+                            final String[] finalStrings = stringArray;
+                            final TextView finalEditText = textViewMain;
+                            if (stringArray != null && isMultiset) {
+                                textViewMain.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        showMultiSelection(tagName, finalStrings, finalEditText, new MultiSelectInterface() {
+                                            @Override
+                                            public void multiSelectListener(String selectedName) {
+                                                finalEditText.setText(selectedName);
+                                            }
+                                        });
+                                    }
+                                });
 
-                                } else if (stringArray != null && !isMultiset) {
-                                    textViewMain.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            showSingleSelection(tagName, finalStrings, finalEditText);
-                                        }
-                                    });
-                                }
-                                if (textViewMain != null) {
-                                    textViewMain.setInputType(InputType.TYPE_NULL);
-                                }
+                            } else if (stringArray != null && !isMultiset) {
+                                textViewMain.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        showSingleSelection(tagName, finalStrings, finalEditText);
+                                    }
+                                });
                             }
-                        });
+                            if (textViewMain != null) {
+                                textViewMain.setInputType(InputType.TYPE_NULL);
+                            }
+                        }
+                    });
 
-                        linearLayout.addView(innerLinearLayout, params);
+                    linearLayout.addView(innerLinearLayout, params);
                 }
 
             } else if (serviceFieldsDto.getType().equalsIgnoreCase("Attachment")) {
@@ -479,25 +487,25 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
                     isManadatory.put(tagName, mandatory);
                 } else {
                     //As per layout this is not required.
-                final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                ServiceUtils.getAttachmentView(mandatory, mContext, params, tagName, new ServiceUtils.AttachmentInterface() {
-                    @Override
-                    public void attachmentListener(LinearLayout innerLinearLayout, final ImageView view, final TextView textView) {
-                        linearLayout.addView(innerLinearLayout, params);
-                        if (textView != null) {
-                            textView.setInputType(InputType.TYPE_NULL);
-                        }
-                        hashMap.put(tagName, "");
-                        isManadatory.put(tagName, mandatory);
-                        view.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                attachmentImageView = view;
-                                showCameraGalleryAlert(tagName, textView);
+                    final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    ServiceUtils.getAttachmentView(mandatory, mContext, params, tagName, new ServiceUtils.AttachmentInterface() {
+                        @Override
+                        public void attachmentListener(LinearLayout innerLinearLayout, final ImageView view, final TextView textView) {
+                            linearLayout.addView(innerLinearLayout, params);
+                            if (textView != null) {
+                                textView.setInputType(InputType.TYPE_NULL);
                             }
-                        });
-                    }
-                });
+                            hashMap.put(tagName, "");
+                            isManadatory.put(tagName, mandatory);
+                            view.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    attachmentImageView = view;
+                                    showCameraGalleryAlert(tagName, textView);
+                                }
+                            });
+                        }
+                    });
                 }
 
 
@@ -603,7 +611,7 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
                     }
                 }
                 onImageSelected(arrayList);
-                saleRegisterPresenter.getHashMapFile(map);
+                serviceFormPresenter.getHashMapFile(map);
             }
         }
 
@@ -717,7 +725,7 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
 //                }
 //                else if (tagName.equalsIgnoreCase("EquipmentFor")) {
 //                    String str = OnGoConstants.editFieldsHASHMAP.get("EquipmentFor");
-//                    categorySpinner.setSelection(saleRegisterPresenter.getSelectedItem(categorySpinner, str));
+//                    categorySpinner.setSelection(serviceFormPresenter.getSelectedItem(categorySpinner, str));
 //                    break;
 //                }
                 View view = linearLayout.getChildAt(i).findViewWithTag(tagName);
@@ -837,7 +845,7 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
 //            hashMap.put("Price Without Fuel", withoutFuel.getText().toString());
 //            hashMap.put("Price", price.getText().toString());
 
-            saleRegisterPresenter.checkValidation(postType, hashMap, isManadatory);
+            serviceFormPresenter.checkValidation(postType, hashMap, isManadatory);
         }
 
 
@@ -945,7 +953,7 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
             }
         });*/
 
-        showMultiChoiceAlertDialog("Title",strings,editText);
+        showMultiChoiceAlertDialog("Title", strings, editText);
     }
 
     private void showMultiChoiceAlertDialog(String type, final String[] stringArray, final TextView editText) {
@@ -1012,7 +1020,7 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
     private void pickCamera() {
 
         // camera select
-        new ImagePicker.Builder(SaleRegisterActivity.this).mode(ImagePicker.Mode.CAMERA).allowMultipleImages(true).compressLevel(ImagePicker.ComperesLevel.MEDIUM).directory(ImagePicker.Directory.DEFAULT).extension(ImagePicker.Extension.PNG).scale(600, 600).allowMultipleImages(true).enableDebuggingMode(true).build();
+        new ImagePicker.Builder(ServiceFormActivity.this).mode(ImagePicker.Mode.CAMERA).allowMultipleImages(true).compressLevel(ImagePicker.ComperesLevel.MEDIUM).directory(ImagePicker.Directory.DEFAULT).extension(ImagePicker.Extension.PNG).scale(600, 600).allowMultipleImages(true).enableDebuggingMode(true).build();
 
     }
 
@@ -1046,7 +1054,7 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
 
                     @Override
                     public void negativeButton() {
-                        EasyPermissions.requestPermissions(SaleRegisterActivity.this, "This app needs Location permission for address.", REQ_LOCATION_CODE, stringPerms);
+                        EasyPermissions.requestPermissions(ServiceFormActivity.this, "This app needs Location permission for address.", REQ_LOCATION_CODE, stringPerms);
                     }
                 });
             }
@@ -1059,7 +1067,7 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
 
                     @Override
                     public void negativeButton() {
-                        EasyPermissions.requestPermissions(SaleRegisterActivity.this, "This app needs Location permission for address.", REQ_LOCATION_CODE, stringPerms);
+                        EasyPermissions.requestPermissions(ServiceFormActivity.this, "This app needs Location permission for address.", REQ_LOCATION_CODE, stringPerms);
                     }
                 });
             } else {
@@ -1067,7 +1075,7 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
             }
 
         } else {
-            saleRegisterPresenter.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            serviceFormPresenter.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
@@ -1092,7 +1100,7 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        saleRegisterPresenter.onActivityResult(requestCode, resultCode, data, new ListenerInterface() {
+        serviceFormPresenter.onActivityResult(requestCode, resultCode, data, new ListenerInterface() {
             @Override
             public void onImageSelected(int requestCode, String fileName) {
                 //single selection type for Gallery and Camera
@@ -1176,7 +1184,6 @@ public class SaleRegisterActivity extends BaseActivity implements SaleRegisterPr
     interface ListenerInterface {
         void onImageSelected(int requestCode, String fileName);
     }
-
 
 
 }

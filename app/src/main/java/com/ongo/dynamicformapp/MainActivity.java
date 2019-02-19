@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
-import com.ongo.dynamicformlibrary.SaleRegisterActivity;
+import com.ongo.dynamicformlibrary.ServiceFormActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //ToDo add the required data
-                startActivity(new Intent(MainActivity.this, SaleRegisterActivity.class));
+                startActivity(new Intent(MainActivity.this, ServiceFormActivity.class));
             }
         });
     }

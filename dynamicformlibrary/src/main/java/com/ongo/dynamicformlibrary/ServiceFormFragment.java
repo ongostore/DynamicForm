@@ -57,9 +57,9 @@ import java.util.Map;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class SaleRegisterFragment extends BaseFragment implements SaleRegisterPresenter.SaleRegisterListener {
+public class ServiceFormFragment extends BaseFragment implements ServiceFormPresenter.SaleRegisterListener {
     public static final int REQUEST_FILE_SELECT = 1;
-    final static String TAG = "SaleRegisterFragment";
+    final static String TAG = "ServiceFormFragment";
     private static final int RP_READ_STORAGE = 126;
     private static final int REQ_LOCATION_CODE = 1432;
     private static final int REQ_CAMERA_CODE = 1452;
@@ -73,7 +73,7 @@ public class SaleRegisterFragment extends BaseFragment implements SaleRegisterPr
     Button submitBTN;
     LinearLayout rentLL1, sell, photosLL, tempImage1, linearLayout;
     EditText withFuel, withoutFuel, price;
-    SaleRegisterPresenter saleRegisterPresenter;
+    ServiceFormPresenter serviceFormPresenter;
     ImageView image1, image2, image3, image4, image5, image6;
     ImageView tempImage2, tempImage3, tempImage4, tempImage5, tempImage6;
     ListView lView;
@@ -94,12 +94,12 @@ public class SaleRegisterFragment extends BaseFragment implements SaleRegisterPr
     private String signaturePath;
     private String postType;
 
-//    public SaleRegisterFragment() {
+//    public ServiceFormFragment() {
 //        // Required empty public constructor
 //    }
 
-    public static SaleRegisterFragment newInstance() {
-        SaleRegisterFragment fragment = new SaleRegisterFragment();
+    public static ServiceFormFragment newInstance() {
+        ServiceFormFragment fragment = new ServiceFormFragment();
         Bundle args = new Bundle();
 //        args.putString(ARG_PARAM1, param1);
 //        args.putString(ARG_PARAM2, param2);
@@ -111,20 +111,20 @@ public class SaleRegisterFragment extends BaseFragment implements SaleRegisterPr
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_sale_register, container, false);
+        View view = inflater.inflate(R.layout.fragment_service_form, container, false);
         mContext = getActivity();
-        saleRegisterPresenter = new SaleRegisterPresenter(SaleRegisterFragment.this, this);
+        serviceFormPresenter = new ServiceFormPresenter(ServiceFormFragment.this, this);
         initView(view);
         Bundle bundle = getArguments();
         if (bundle != null) {
             postType = bundle.getString("postType");
             itemJob = bundle.getString("jsonObj");
             if (itemJob != null) {
-                OnGoConstants.editFieldsHASHMAP = saleRegisterPresenter.getHashMap(itemJob);
-                OnGoConstants.editFieldsImagesHashMap = saleRegisterPresenter.getImagesHashMap(itemJob);
+                OnGoConstants.editFieldsHASHMAP = serviceFormPresenter.getHashMap(itemJob);
+                OnGoConstants.editFieldsImagesHashMap = serviceFormPresenter.getImagesHashMap(itemJob);
             }
         }
-        saleRegisterPresenter.getServiceFields(postType);
+        serviceFormPresenter.getServiceFields(postType);
 
         return view;
     }
@@ -184,7 +184,7 @@ public class SaleRegisterFragment extends BaseFragment implements SaleRegisterPr
         photosLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saleRegisterPresenter.getImagesList();
+                serviceFormPresenter.getImagesList();
             }
         });
         submitBTN.setOnClickListener(new View.OnClickListener() {
@@ -366,7 +366,7 @@ public class SaleRegisterFragment extends BaseFragment implements SaleRegisterPr
                             final ArrayList<String> finalStrings = keysArray;
                             final ArrayList<String> finalValuesArray = valuesArray;
                             final TextView finalEditText = textViewMain;
-                            String dependencyName = saleRegisterPresenter.getDependencyNameList(serviceFieldsDtos, tagName);
+                            String dependencyName = serviceFormPresenter.getDependencyNameList(serviceFieldsDtos, tagName);
                             DependentDTO dependentDTO = new DependentDTO();
                             dependentDTO.setDependentName(dependencyName);
                             dependentDTO.setKeyArray(keysArray);
@@ -380,7 +380,7 @@ public class SaleRegisterFragment extends BaseFragment implements SaleRegisterPr
                                     public void onClick(View v) {
                                         ArrayList<String> subKeysArray = new ArrayList<>();
                                         ArrayList<String> subValueArray = new ArrayList<>();
-                                        DependentDTO dependentDTO1 = saleRegisterPresenter.checkDependency(dependentDTOS, tagName);
+                                        DependentDTO dependentDTO1 = serviceFormPresenter.checkDependency(dependentDTOS, tagName);
                                         if (dependentDTO1 != null) {
                                             String selectedId = dependentDTO1.getSelectedId();
                                             if (TextUtils.isEmpty(selectedId)) {
@@ -584,7 +584,7 @@ public class SaleRegisterFragment extends BaseFragment implements SaleRegisterPr
                     }
                 }
                 onImageSelected(arrayList);
-                saleRegisterPresenter.getHashMapFile(map);
+                serviceFormPresenter.getHashMapFile(map);
             }
         }
 
@@ -704,7 +704,7 @@ public class SaleRegisterFragment extends BaseFragment implements SaleRegisterPr
 //                    break;
 //                } else if (tagName.equalsIgnoreCase("EquipmentFor")) {
 //                    String str = OnGoConstants.editFieldsHASHMAP.get("EquipmentFor");
-//                    categorySpinner.setSelection(saleRegisterPresenter.getSelectedItem(categorySpinner, str));
+//                    categorySpinner.setSelection(serviceFormPresenter.getSelectedItem(categorySpinner, str));
 //                    break;
 //                }
                 View view = linearLayout.getChildAt(i).findViewWithTag(tagName);
@@ -824,7 +824,7 @@ public class SaleRegisterFragment extends BaseFragment implements SaleRegisterPr
 //            hashMap.put("Price Without Fuel", withoutFuel.getText().toString());
 //            hashMap.put("Price", price.getText().toString());
 
-            saleRegisterPresenter.checkValidation(postType, hashMap, isManadatory);
+            serviceFormPresenter.checkValidation(postType, hashMap, isManadatory);
         }
 
 
@@ -1058,7 +1058,7 @@ public class SaleRegisterFragment extends BaseFragment implements SaleRegisterPr
 
                     @Override
                     public void negativeButton() {
-                        EasyPermissions.requestPermissions(SaleRegisterFragment.this, "This app needs Location permission for address.", REQ_LOCATION_CODE, stringPerms);
+                        EasyPermissions.requestPermissions(ServiceFormFragment.this, "This app needs Location permission for address.", REQ_LOCATION_CODE, stringPerms);
                     }
                 });
             }
@@ -1071,7 +1071,7 @@ public class SaleRegisterFragment extends BaseFragment implements SaleRegisterPr
 
                     @Override
                     public void negativeButton() {
-                        EasyPermissions.requestPermissions(SaleRegisterFragment.this, "This app needs Location permission for address.", REQ_LOCATION_CODE, stringPerms);
+                        EasyPermissions.requestPermissions(ServiceFormFragment.this, "This app needs Location permission for address.", REQ_LOCATION_CODE, stringPerms);
                     }
                 });
             } else {
@@ -1079,7 +1079,7 @@ public class SaleRegisterFragment extends BaseFragment implements SaleRegisterPr
             }
 
         } else {
-            saleRegisterPresenter.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            serviceFormPresenter.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
@@ -1104,7 +1104,7 @@ public class SaleRegisterFragment extends BaseFragment implements SaleRegisterPr
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        saleRegisterPresenter.onActivityResult(requestCode, resultCode, data, new SaleRegisterActivity.ListenerInterface() {
+        serviceFormPresenter.onActivityResult(requestCode, resultCode, data, new ServiceFormActivity.ListenerInterface() {
             @Override
             public void onImageSelected(int requestCode, String fileName) {
             }

@@ -27,4 +27,5 @@
     <string name="per_day_with_fuel">Per Day with Fuel</string>
     <string name="price">Price</string>
     <string name="ok">Ok</string>
+    <string name="no_network">Internet is not available</string>
 </resources>

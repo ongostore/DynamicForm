@@ -36,29 +36,29 @@ import java.util.Iterator;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
-import static com.ongo.dynamicformlibrary.SaleRegisterActivity.REQUEST_FILE_SELECT;
+import static com.ongo.dynamicformlibrary.ServiceFormActivity.REQUEST_FILE_SELECT;
 
 
-class SaleRegisterPresenter implements SaleRegisterDataSource.SaleRegisterDataSourceListener {
+class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSourceListener {
     private static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 401;
     private final int REQUEST_IMAGE = 301;
     private HashMap<String, File> hashMapFile = new HashMap<>();
-    private SaleRegisterDataSource saleRegisterDataSource;
+    private ServiceFormDataSource serviceFormDataSource;
     private Context mContext;
     private SaleRegisterListener saleRegisterListener;
     private Fragment fragment;
 
-    SaleRegisterPresenter(Fragment fragment, SaleRegisterListener saleRegisterListener) {
+    ServiceFormPresenter(Fragment fragment, SaleRegisterListener saleRegisterListener) {
         this.fragment = fragment;
         this.mContext = fragment.getContext();
         this.saleRegisterListener = saleRegisterListener;
-        saleRegisterDataSource = new SaleRegisterDataSource(mContext, this);
+        serviceFormDataSource = new ServiceFormDataSource(mContext, this);
     }
 
-    SaleRegisterPresenter(Context mContext, SaleRegisterListener saleRegisterListener) {
+    ServiceFormPresenter(Context mContext, SaleRegisterListener saleRegisterListener) {
         this.mContext = mContext;
         this.saleRegisterListener = saleRegisterListener;
-        saleRegisterDataSource = new SaleRegisterDataSource(mContext, this);
+        serviceFormDataSource = new ServiceFormDataSource(mContext, this);
     }
 
     void getImagesList() {
@@ -98,7 +98,7 @@ class SaleRegisterPresenter implements SaleRegisterDataSource.SaleRegisterDataSo
         }
     }
 
-    void onActivityResult(int requestCode, int resultCode, Intent data, SaleRegisterActivity.ListenerInterface listenerInterface) {
+    void onActivityResult(int requestCode, int resultCode, Intent data, ServiceFormActivity.ListenerInterface listenerInterface) {
         if (requestCode == REQUEST_IMAGE && data != null) {
          /*   ArrayList<String> imagesList = data.getStringArrayListExtra(MultiImageSelector.EXTRA_RESULT);
             if (imagesList != null && imagesList.size() > 0) {
@@ -388,7 +388,7 @@ class SaleRegisterPresenter implements SaleRegisterDataSource.SaleRegisterDataSo
     }
 
     void getServiceFields(String postType) {
-        saleRegisterDataSource.getServiceFields(postType);
+        serviceFormDataSource.getServiceFields(postType);
     }
 
     @Override
