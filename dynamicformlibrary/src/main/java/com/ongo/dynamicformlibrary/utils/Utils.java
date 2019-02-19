@@ -84,8 +84,6 @@ import cc.cloudist.acplibrary.ACProgressFlower;
 
 public class Utils {
 
-    public static String NO_NET = "Internet Not Available";
-    public static String CHK_NET = "Check your Internet Connection";
     public static String regular_Font = "Regular";
     public static String semiBold_Font = "SemiBold";
     public static String bold_Font = "Bold";

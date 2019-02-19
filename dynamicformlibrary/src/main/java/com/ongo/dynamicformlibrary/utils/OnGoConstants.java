@@ -2,7 +2,7 @@ package com.ongo.dynamicformlibrary.utils;
 
 import android.content.Context;
 
-import com.ongo.loaderdozer.R;
+import com.ongo.dynamicformlibrary.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
