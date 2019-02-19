@@ -1,0 +1,11 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ongo.dynamicformlibrary">
+
+    <application>
+
+        <activity
+            android:name=".SaleRegisterActivity"
+            android:configChanges="orientation|screenSize" />
+
+    </application>
+</manifest>
