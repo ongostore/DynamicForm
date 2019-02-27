@@ -26,19 +26,19 @@ class ServiceFormDataSource {
 
     private ArrayList<ServiceFieldsDto> serviceFieldsDtos;
     private Context mContext;
-    private SaleRegisterDataSourceListener sourceListner;
+    private SaleRegisterDataSourceListener sourceListener;
 
-    public ServiceFormDataSource(Context mContext, SaleRegisterDataSourceListener sourceListner) {
+    ServiceFormDataSource(Context mContext, SaleRegisterDataSourceListener sourceListener) {
         this.mContext = mContext;
-        this.sourceListner = sourceListner;
+        this.sourceListener = sourceListener;
     }
 
-    public void getServiceFields(String postType) {
+    void getServiceFields(String baseUrl, String postType, String mallId) {
         WebServices ws = new WebServices(mContext);
-        String url = Utils.getBaseUrl(mContext) + "/Services/getMasters";
+        String url = /*Utils.getBaseUrl(mContext)*/ baseUrl+ "/Services/getMasters";
         RequestParams params = new RequestParams();
         params.put("type", "allJobTypes|"+postType);
-        params.put("mallId", Utils.getMallId(mContext));
+        params.put("mallId", mallId); //Utils.getMallId(mContext));
         params.put("dt", "CAMPAIGNS");
         ws.invokeWebService(params, url, true, new WebServices.WSResponse() {
             @Override
@@ -62,25 +62,25 @@ class ServiceFormDataSource {
                                             serviceFieldsDto.setServiceType(jInner.getString("type"));
                                         }
 
-                                        JSONObject jInnerFileds = jFiledsArray.getJSONObject(i);
-                                        if (jInnerFileds.has("name")) {
-                                            serviceFieldsDto.setName(jInnerFileds.getString("name"));
+                                        JSONObject jInnerFields = jFiledsArray.getJSONObject(i);
+                                        if (jInnerFields.has("name")) {
+                                            serviceFieldsDto.setName(jInnerFields.getString("name"));
                                         }
-                                        if (jInnerFileds.has("addMore")) {
-                                            serviceFieldsDto.setAddMore(String.valueOf(jInnerFileds.getBoolean("addMore")));
+                                        if (jInnerFields.has("addMore")) {
+                                            serviceFieldsDto.setAddMore(String.valueOf(jInnerFields.getBoolean("addMore")));
                                         }
-                                        if (jInnerFileds.has("type")) {
-                                            serviceFieldsDto.setType(jInnerFileds.getString("type"));
+                                        if (jInnerFields.has("type")) {
+                                            serviceFieldsDto.setType(jInnerFields.getString("type"));
                                         }
-                                        if (jInnerFileds.has("mandatory")) {
-                                            serviceFieldsDto.setMandatory(jInnerFileds.getString("mandatory"));
+                                        if (jInnerFields.has("mandatory")) {
+                                            serviceFieldsDto.setMandatory(jInnerFields.getString("mandatory"));
                                         }
-                                        if (jInnerFileds.has("allowedValues")) {
-                                            serviceFieldsDto.setAllowedValues(jInnerFileds.getString("allowedValues"));
+                                        if (jInnerFields.has("allowedValues")) {
+                                            serviceFieldsDto.setAllowedValues(jInnerFields.getString("allowedValues"));
                                         }
-                                        if (jInnerFileds.has("allowedValuesResults")) {
+                                        if (jInnerFields.has("allowedValuesResults")) {
 
-                                            JSONObject jAllowedResults = jInnerFileds.getJSONObject("allowedValuesResults");
+                                            JSONObject jAllowedResults = jInnerFields.getJSONObject("allowedValuesResults");
 
                                             Type typeOfObjectsListNew = new TypeToken<HashMap<String, String>>() {
                                             }.getType();
@@ -93,20 +93,20 @@ class ServiceFormDataSource {
 
                                             serviceFieldsDto.setAllowedValuesResults(arry);
                                         }
-                                        if (jInnerFileds.has("multiselect")) {
-                                            serviceFieldsDto.setMultiselect(jInnerFileds.getString("multiselect"));
+                                        if (jInnerFields.has("multiselect")) {
+                                            serviceFieldsDto.setMultiselect(jInnerFields.getString("multiselect"));
                                         }
-                                        if (jInnerFileds.has("groupName")) {
-                                            serviceFieldsDto.setGroupName(jInnerFileds.getString("groupName"));
+                                        if (jInnerFields.has("groupName")) {
+                                            serviceFieldsDto.setGroupName(jInnerFields.getString("groupName"));
                                         }
-                                        if (jInnerFileds.has("dependentFields")) {
-                                            serviceFieldsDto.setDependentFields(jInnerFileds.getString("dependentFields"));
+                                        if (jInnerFields.has("dependentFields")) {
+                                            serviceFieldsDto.setDependentFields(jInnerFields.getString("dependentFields"));
                                         }
-                                        if (jInnerFileds.has("propgateValueToSubFormFields")) {
-                                            serviceFieldsDto.setPropgateValueToSubFormFields(jInnerFileds.getString("propgateValueToSubFormFields"));
+                                        if (jInnerFields.has("propgateValueToSubFormFields")) {
+                                            serviceFieldsDto.setPropgateValueToSubFormFields(jInnerFields.getString("propgateValueToSubFormFields"));
                                         }
-                                        if (jInnerFileds.has("allowedValuesResults")) {
-                                            JSONObject jsonObject = jInnerFileds.getJSONObject("allowedValuesResults");
+                                        if (jInnerFields.has("allowedValuesResults")) {
+                                            JSONObject jsonObject = jInnerFields.getJSONObject("allowedValuesResults");
                                             Iterator<?> keys = jsonObject.keys();
                                             ArrayList<MyMap> arry = new ArrayList<>();
                                             while (keys.hasNext()) {
@@ -123,7 +123,7 @@ class ServiceFormDataSource {
                                         }
                                         serviceFieldsDtos.add(serviceFieldsDto);
                                     }
-                                    sourceListner.onResponse(serviceFieldsDtos);
+                                    sourceListener.onResponse(serviceFieldsDtos);
                                 } else {
                                     Utils.toast("No Form", mContext);
                                 }

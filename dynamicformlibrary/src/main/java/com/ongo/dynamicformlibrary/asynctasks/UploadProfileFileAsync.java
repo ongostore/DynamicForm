@@ -86,7 +86,7 @@ public class UploadProfileFileAsync extends AsyncTask<Void, Void, Void> {
 			try {
 				HttpClient httpClient = new DefaultHttpClient();
 				HttpContext localContext = new BasicHttpContext();
-				HttpPost httpPost = new HttpPost(OnGoConstants.uploadFile(mContext));
+				HttpPost httpPost = new HttpPost(OnGoConstants.uploadFile());
 				FileBody fileBody = new FileBody(new File(imagePathsHashMap));
 				
 				MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);

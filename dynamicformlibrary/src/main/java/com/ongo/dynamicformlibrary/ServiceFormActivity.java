@@ -59,7 +59,7 @@ import java.util.Map;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class ServiceFormActivity extends BaseActivity implements ServiceFormPresenter.SaleRegisterListener {
+public class ServiceFormActivity extends BaseActivity implements ServiceFormPresenter.ServiceFormListener {
     public static final int REQUEST_FILE_SELECT = 1;
     final static String TAG = "ServiceFormActivity";
     private static final int RP_READ_STORAGE = 126;
@@ -129,7 +129,7 @@ public class ServiceFormActivity extends BaseActivity implements ServiceFormPres
             }
         }
         if (Utils.isNetworkAvailable(mContext)) {
-            serviceFormPresenter.getServiceFields(postType);
+//            serviceFormPresenter.getServiceFields(postType);
         } else {
             showMessage(getString(R.string.no_network));
         }

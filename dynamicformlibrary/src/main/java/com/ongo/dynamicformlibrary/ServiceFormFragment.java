@@ -57,7 +57,7 @@ import java.util.Map;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class ServiceFormFragment extends BaseFragment implements ServiceFormPresenter.SaleRegisterListener {
+public class ServiceFormFragment extends BaseFragment implements ServiceFormPresenter.ServiceFormListener {
     public static final int REQUEST_FILE_SELECT = 1;
     final static String TAG = "ServiceFormFragment";
     private static final int RP_READ_STORAGE = 126;
@@ -117,14 +117,14 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
         initView(view);
         Bundle bundle = getArguments();
         if (bundle != null) {
-            postType = bundle.getString("postType");
-            itemJob = bundle.getString("jsonObj");
+            postType = bundle.getString(OnGoConstants.postType);
+            itemJob = bundle.getString(OnGoConstants.jobObj);
             if (itemJob != null) {
                 OnGoConstants.editFieldsHASHMAP = serviceFormPresenter.getHashMap(itemJob);
                 OnGoConstants.editFieldsImagesHashMap = serviceFormPresenter.getImagesHashMap(itemJob);
             }
         }
-        serviceFormPresenter.getServiceFields(postType);
+        serviceFormPresenter.getServiceFields(OnGoConstants.getHostUrl(), postType, OnGoConstants.mallId);
 
         return view;
     }

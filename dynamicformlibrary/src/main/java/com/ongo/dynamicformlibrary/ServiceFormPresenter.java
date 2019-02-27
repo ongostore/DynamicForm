@@ -45,17 +45,17 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
     private HashMap<String, File> hashMapFile = new HashMap<>();
     private ServiceFormDataSource serviceFormDataSource;
     private Context mContext;
-    private SaleRegisterListener saleRegisterListener;
+    private ServiceFormListener saleRegisterListener;
     private Fragment fragment;
 
-    ServiceFormPresenter(Fragment fragment, SaleRegisterListener saleRegisterListener) {
+    ServiceFormPresenter(Fragment fragment, ServiceFormListener saleRegisterListener) {
         this.fragment = fragment;
         this.mContext = fragment.getContext();
         this.saleRegisterListener = saleRegisterListener;
         serviceFormDataSource = new ServiceFormDataSource(mContext, this);
     }
 
-    ServiceFormPresenter(Context mContext, SaleRegisterListener saleRegisterListener) {
+    ServiceFormPresenter(Context mContext, ServiceFormListener saleRegisterListener) {
         this.mContext = mContext;
         this.saleRegisterListener = saleRegisterListener;
         serviceFormDataSource = new ServiceFormDataSource(mContext, this);
@@ -387,8 +387,8 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
 //        }
     }
 
-    void getServiceFields(String postType) {
-        serviceFormDataSource.getServiceFields(postType);
+    void getServiceFields(String baseUrl, String postType, String mallId) {
+        serviceFormDataSource.getServiceFields(baseUrl, postType, mallId);
     }
 
     @Override
@@ -493,10 +493,10 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
             hashMapString.put("dt", "CAMPAIGNS");
             hashMapString.put("category", "Products");
 
-            hashMapString.put("userId", Utils.getMallId(mContext));
-            hashMapString.put("consumerEmail", SharedPref.read(OnGoConstants.PREF_MOBILE_NUMBER, "") + "@ongo.com"); //as user sign up by mobileNumber and postfix as '@ongo.com'.
+            hashMapString.put("userId", OnGoConstants.getMallId());
+            hashMapString.put("consumerEmail", OnGoConstants.getConsumerEmail()); //as user sign up by mobileNumber and postfix as '@ongo.com'.
 
-            new APICall(OnGoConstants.postServices(mContext), hashMapFile, hashMapString, mContext, new APICall.APIResponse() {
+            new APICall(OnGoConstants.getHostUrl(), hashMapFile, hashMapString, mContext, new APICall.APIResponse() {
                 @Override
                 public void onResponse(String result) {
 
@@ -524,7 +524,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
     private void uploadMultipleImages(HashMap<String, File> fileHashMapFiles, String jobId, boolean isItemCode) {
         HashMap<String, String> filehashmap = new HashMap<>();
         filehashmap.put("jobId", jobId);
-        filehashmap.put("orgId", Utils.getMallId(mContext));
+        filehashmap.put("orgId", OnGoConstants.getMallId());
         Log.e("fileHashMapFiles", ">>>>>>>>.." + fileHashMapFiles);
         if (isItemCode) {
             deleteAttachments(jobId, fileHashMapFiles, filehashmap);
@@ -535,7 +535,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
 
 
     private void uploadAttachments(final HashMap<String, File> fileHashMapFiles, final HashMap<String, String> fileHashMap) {
-        new APICall(OnGoConstants.uploadAttachments(mContext), fileHashMapFiles, fileHashMap, mContext, new APICall.APIResponse() {
+        new APICall(OnGoConstants.uploadAttachments(), fileHashMapFiles, fileHashMap, mContext, new APICall.APIResponse() {
             @Override
             public void onResponse(String result) {
                 if (result == null || result.equalsIgnoreCase("")) {
@@ -562,7 +562,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
     }
 
     private void deleteAttachments(String jobId, final HashMap<String, File> fileHashMapFiles, final HashMap<String, String> fileHashMap) {
-        String url = OnGoConstants.deleteAllAttachments(mContext) + "jobId=" + jobId;
+        String url = OnGoConstants.deleteAllAttachments() + "jobId=" + jobId;
         new APICall(url, fileHashMapFiles, fileHashMap, mContext, new APICall.APIResponse() {
             @Override
             public void onResponse(String result) {
@@ -645,7 +645,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
     }
 
 
-    interface SaleRegisterListener {
+    interface ServiceFormListener {
         void onResponse(String status);
 
         void onImageSelected(ArrayList<String> imagesList);

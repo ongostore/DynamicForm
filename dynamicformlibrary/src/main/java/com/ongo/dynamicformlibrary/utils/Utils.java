@@ -91,18 +91,7 @@ public class Utils {
     public static String roboto_bold = "roboto_bold";
     public static String roboto = "roboto";
     public static String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-    private static SharedPreferences mPreferences;
-    private static Editor mPrefEditor;
     private static ProgressDialog mProgressDialog;
-    public String gPlus = "Google+";
-
-    public static String getGuestMail(SharedPreferences mPreferences) {
-        return mPreferences.getString(OnGoConstants.PREF_GUESTMAILL, "");
-    }
-
-    public static String getGuestUserId(SharedPreferences mPreferences) {
-        return mPreferences.getString(OnGoConstants.PREF_GUEST_USERID, "");
-    }
 
     public static String getClassName(Context mContext) {
         return mContext.getClass().getName();
@@ -183,18 +172,6 @@ public class Utils {
         }
     }
 
-    public static String getStoreItemCode(Context mContext) {
-
-        SharedPreferences mPref = mContext.getSharedPreferences(OnGoConstants.PREF_NAME, Context.MODE_PRIVATE);
-        return mPref.getString(OnGoConstants.PREF_STORE_ITEMCODE, "");
-    }
-
-    public static boolean isExAnalyticsEnabled(Context mContext) {
-
-        SharedPreferences mPref = mContext.getSharedPreferences(OnGoConstants.PREF_NAME, Context.MODE_PRIVATE);
-        return mPref.getBoolean(OnGoConstants.PREF_LOYALITY_EXTREME, false) && isNetworkAvailable(mContext);
-        //return true;
-    }
 
     public static Bitmap getBitmapFromURL(String src) {
         try {
@@ -254,50 +231,6 @@ public class Utils {
             e.printStackTrace();
             return time;
         }
-    }
-
-    public static void removeLoginPreferences(Editor mPrefEditor) {
-        mPrefEditor.remove(OnGoConstants.PREF_MACID);
-        mPrefEditor.remove(OnGoConstants.PREF_STATE);
-        mPrefEditor.remove(OnGoConstants.PREF_USER_ID);
-        mPrefEditor.remove(OnGoConstants.PREF_COUNTRY);
-        mPrefEditor.remove(OnGoConstants.PREF_COVER_IMAGE);
-        mPrefEditor.remove(OnGoConstants.PREF_PROFILE_IMAGE);
-        mPrefEditor.remove(OnGoConstants.PREF_FIRST_NAME);
-        mPrefEditor.remove(OnGoConstants.PREF_LAST_NAME);
-        mPrefEditor.remove(OnGoConstants.PREF_USER_NAME);
-        mPrefEditor.remove(OnGoConstants.PREF_CITY);
-        mPrefEditor.remove(OnGoConstants.PREF_EMAIL_ID);
-        mPrefEditor.remove(OnGoConstants.PREF_ORGANIZATION);
-        mPrefEditor.remove(OnGoConstants.PREF_ADDRESS);
-
-
-        mPrefEditor.remove(OnGoConstants.PREF_USER_FULL_ADDRESS);
-        mPrefEditor.remove(OnGoConstants.PREF_MOBILE_NUMBER);
-        mPrefEditor.remove(OnGoConstants.PREF_LOGIN_PIN);
-
-        mPrefEditor.remove(OnGoConstants.PREF_SUBSCRIBE_ID);
-        mPrefEditor.remove(OnGoConstants.PREF_USER_DETAILED_ADDRESS);
-        mPrefEditor.remove(OnGoConstants.PREF_MEAL_CHOICE);
-        mPrefEditor.remove(OnGoConstants.PREF_PACKING_TYPE);
-        mPrefEditor.remove(OnGoConstants.PREF_FOOD_CHOICE);
-        mPrefEditor.remove(OnGoConstants.PREF_FOOD_STYLE);
-        mPrefEditor.remove(OnGoConstants.PREF_USER_SUBSCRIBED);
-
-        mPrefEditor.remove(OnGoConstants.PREF_USER_SUBSCRIBE_FROM_DATE);
-        mPrefEditor.remove(OnGoConstants.PREF_VALID_TILL);
-        mPrefEditor.remove(OnGoConstants.PREF_MEAL_PACK_DAYS_SELECTED);
-
-        mPrefEditor.remove(OnGoConstants.PREF_MAP_ADDRESS);
-        mPrefEditor.remove(OnGoConstants.PREF_LAT);
-        mPrefEditor.remove(OnGoConstants.PREF_LONG);
-        mPrefEditor.remove(OnGoConstants.from_sample_to_subscribe);
-        mPrefEditor.remove(OnGoConstants.PREF_DISCOUNTED_AMOUNT);
-        mPrefEditor.remove(OnGoConstants.SUBSCRIPTION_TYPE);
-        mPrefEditor.remove(OnGoConstants.PREF_NO_OF_ROTIS);
-
-        mPrefEditor.remove(OnGoConstants.PREF_MANUAL_ADDRESS);
-        mPrefEditor.commit();
     }
 
     public static boolean checkType(String type) {
@@ -376,75 +309,6 @@ public class Utils {
             mProgressDialog.show();
     }
 
-    public static void saveingPreference(Editor mPrefEditor, JSONObject insideOBJ) {
-        try {
-
-            //Log.e("saving preference json", ">>>>>>>" + insideOBJ);
-
-            if (insideOBJ.has("SecondaryEmail") && !insideOBJ.getString("SecondaryEmail").isEmpty())
-                mPrefEditor.putString(OnGoConstants.PREF_EMAIL_ID, insideOBJ.getString("SecondaryEmail"));
-            if (insideOBJ.has("firstName") && !insideOBJ.getString("firstName").isEmpty())
-                mPrefEditor.putString(OnGoConstants.PREF_FIRST_NAME, insideOBJ.getString("firstName"));
-            if (insideOBJ.has("Image") && !insideOBJ.getString("Image").isEmpty())
-                mPrefEditor.putString(OnGoConstants.PREF_PROFILE_IMAGE, insideOBJ.getString("Image"));
-            if (insideOBJ.has("address") && !insideOBJ.getString("address").isEmpty())
-                mPrefEditor.putString(OnGoConstants.PREF_USER_FULL_ADDRESS, insideOBJ.getString("address"));
-            if (insideOBJ.has("mobileNo") && !insideOBJ.getString("mobileNo").isEmpty())
-                mPrefEditor.putString(OnGoConstants.PREF_MOBILE_NUMBER, insideOBJ.getString("mobileNo"));
-            if (insideOBJ.has("lattitude") && !insideOBJ.getString("lattitude").isEmpty())
-                mPrefEditor.putString(OnGoConstants.PREF_LAT, insideOBJ.getString("lattitude"));
-            if (insideOBJ.has("longitude") && !insideOBJ.getString("longitude").isEmpty())
-                mPrefEditor.putString(OnGoConstants.PREF_LONG, insideOBJ.getString("longitude"));
-            if (insideOBJ.has("CancelDates") && !insideOBJ.getString("CancelDates").isEmpty())
-                mPrefEditor.putString(OnGoConstants.PREF_CANCELLED_DATES, insideOBJ.getString("CancelDates"));
-            if (insideOBJ.has("DetailedAddress") && !insideOBJ.getString("DetailedAddress").isEmpty()) {
-                mPrefEditor.putString(OnGoConstants.PREF_USER_DETAILED_ADDRESS, insideOBJ.getString("DetailedAddress"));
-                if (insideOBJ.getString("DetailedAddress").contains("~") &&
-                        insideOBJ.getString("DetailedAddress").length() > 1) {
-                    String[] address = insideOBJ.getString("DetailedAddress").split("~");
-                    mPrefEditor.putString(OnGoConstants.PREF_MAP_ADDRESS, address[0]);
-                    if (address.length == 2)
-                        mPrefEditor.putString(OnGoConstants.PREF_MANUAL_ADDRESS, address[1]);
-                } else {
-                    mPrefEditor.putString(OnGoConstants.PREF_MAP_ADDRESS, insideOBJ.getString("DetailedAddress"));
-                }
-            }
-            if (insideOBJ.has("Roti") && !insideOBJ.getString("Roti").isEmpty())
-                mPrefEditor.putString(OnGoConstants.PREF_NO_OF_ROTIS, insideOBJ.getString("Roti"));
-
-            /*************** subscrption preferecenes of user *********************************/
-            mPrefEditor.putString(OnGoConstants.PREF_FOOD_CHOICE, insideOBJ.getString("Food Choice"));
-            mPrefEditor.putString(OnGoConstants.PREF_FOOD_STYLE, insideOBJ.getString("Food Style"));
-            mPrefEditor.putString(OnGoConstants.PREF_MEAL_CHOICE, insideOBJ.getString("Meal Choice"));
-            mPrefEditor.putString(OnGoConstants.PREF_MEAL_CHOICE_PLAN, insideOBJ.getString("Meal Plan"));
-            mPrefEditor.putString(OnGoConstants.PREF_PACKING_TYPE, insideOBJ.getString("Packing Type"));
-            mPrefEditor.putString(OnGoConstants.PREF_SUBSCRIBE_ID, insideOBJ.getString("SubscribeId"));
-
-            if (insideOBJ.getString("SubscribeId").length() > 0) {
-                if (insideOBJ.getString("SubscribeId").substring(0, 2).equalsIgnoreCase("DM"))
-                    mPrefEditor.putString(OnGoConstants.SUBSCRIPTION_TYPE, "subscribe");
-                else
-                    mPrefEditor.putString(OnGoConstants.SUBSCRIPTION_TYPE, "samplemeal");
-            }
-
-            mPrefEditor.putString(OnGoConstants.PREF_USER_SUBSCRIBED, insideOBJ.getString("SubscribedUser"));
-            mPrefEditor.putString(OnGoConstants.PREF_SUBSCRIBED_MONEY, insideOBJ.getString("MealPackageAmount"));
-            mPrefEditor.putString(OnGoConstants.PREF_MEAL_PACK_AMOUNT, insideOBJ.getString("SelectedMealAmount"));
-            mPrefEditor.putString(OnGoConstants.PREF_USER_SUBSCRIBE_FROM_DATE, insideOBJ.getString("ValidFrom"));
-            mPrefEditor.putString(OnGoConstants.PREF_VALID_TILL, insideOBJ.getString("ValidTill"));
-            mPrefEditor.putString(OnGoConstants.PREF_RENEWAL, (insideOBJ.getString("Renewal") == null || insideOBJ.getString("Renewal").length() == 0 ? "no" : insideOBJ.getString("Renewal")));
-            mPrefEditor.putString(OnGoConstants.PREF_MEAL_PACK_DAYS_SELECTED, insideOBJ.getString("MealPlanDays"));
-            mPrefEditor.putString(OnGoConstants.PREF_CANCELLED_DATES, insideOBJ.getString("CancelDates"));
-            mPrefEditor.putString(OnGoConstants.PREF_DISCOUNTED_AMOUNT, insideOBJ.getString("DiscountAmount"));
-
-            mPrefEditor.putString(OnGoConstants.PREF_RENEWAL_VALID_FROM, insideOBJ.getString("RenewalValidFrom"));
-            mPrefEditor.putString(OnGoConstants.PREF_RENEWAL_VALID_TILL, insideOBJ.getString("RenewalValidTill"));
-
-            mPrefEditor.commit();
-        } catch (JSONException e) {
-            Log.e("exp in logact savprf", "" + e.getLocalizedMessage());
-        }
-    }
 
     public static Typeface getFontFromAsset(Context context, String type) {
         Typeface typeface = null;
@@ -491,59 +355,13 @@ public class Utils {
         return alt;
     }
 
-    /**
-     * @param mContext
-     * @return slected mall id
-     */
-    public static String getMallId(Context mContext) {
-        if (mContext.getResources().getString(R.string.allMallsApp).equalsIgnoreCase("true")) {
-            SharedPreferences mPreferences = mContext.getSharedPreferences(OnGoConstants.PREF_NAME, Context.MODE_PRIVATE);
-            return mPreferences.getString(OnGoConstants.PREF_SELECTED_MALL_ID, "");
-        } else {
-            return mContext.getResources().getString(R.string.mall_id);
-        }
-    }
-
-    /**
+     /**
      * @param mContext
      * @return string from Strings File
      */
     public static String getString(Context mContext, int id) {
         return mContext.getResources().getString(id);
     }
-
-	/*public static void setScreenTitle(String screenTitle, Context mContext, String activity, boolean verified) {
-        ActionBar actionBar = null;
-		if (activity.equalsIgnoreCase("SherlockActivity")) {
-			actionBar = ((AppCompatActivity) mContext).getSupportActionBar();
-		} else if (activity.equalsIgnoreCase("SherlockFragmentActivity")) {
-			actionBar = ((Fragment) mContext).getSupportActionBar();
-		} else if (activity.equalsIgnoreCase("SlidingFragmentActivity")) {
-			*//*actionBar = ((SlidingFragmentActivity) mContext).getSupportActionBar();*//*
-        }
-		TextView textView = new TextView(mContext);
-		textView.setTextColor(Color.BLACK);
-		textView.setPadding(0, 0, 0, 0);
-		textView.setTextSize(20);
-		textView.setGravity(Gravity.CENTER);
-		textView.setSingleLine(true);
-		textView.setEllipsize(TruncateAt.END);
-		if (screenTitle != null) {
-			textView.setText(screenTitle);
-		} else {
-			textView.setText("");
-		}
-		if (verified) {
-			textView.setCompoundDrawablesWithIntrinsicBounds(null, null, mContext.getResources().getDrawable(R.drawable.verifiedcircle), null);
-		} else {
-			textView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-		}
-		setFont(textView, semiBold_Font, "TextView");
-
-		actionBar.setDisplayShowCustomEnabled(true);
-		actionBar.setDisplayShowTitleEnabled(false);
-		actionBar.setCustomView(textView);
-	}*/
 
     public static boolean isNetworkAvailable(Context ctx) {
         ConnectivityManager mConnectivityManager = (ConnectivityManager) ctx
@@ -556,14 +374,6 @@ public class Utils {
 
     public static void toast(String msg, Context ctx) {
         Toast toast = Toast.makeText(ctx, msg, Toast.LENGTH_LONG);
-//        try {
-//            LinearLayout toastLayout = (LinearLayout) toast.getView();
-//            TextView toastTV = (TextView) toastLayout.getChildAt(0);
-//            toastTV.setTextSize(16);
-//        } catch (Exception e) {
-//        } finally {
-//            toast.show();
-//        }
         toast.show();
     }
 
@@ -782,14 +592,6 @@ public class Utils {
         }
     }
 
-    public static void productDetailsShare(Context mContext, String cmpNames, String cmpIds) {
-        mPreferences = mContext.getSharedPreferences(OnGoConstants.PREF_NAME, Context.MODE_PRIVATE);
-        mPrefEditor = mPreferences.edit();
-        mPrefEditor.putString(OnGoConstants.CAMPAIGN_JOBS_NAMES, cmpNames);
-        mPrefEditor.putString(OnGoConstants.CAMPAIGN_JOBS_IDS, cmpIds);
-        mPrefEditor.commit();
-
-    }
 
 	/* Android Version Codes */
 
@@ -846,45 +648,6 @@ public class Utils {
                 .load(imageUrl).into(imageView);
     }
 
-    public static void loadProductImage(ImageView thumbImage, String imageUrl, Context mContext) {
-        loadImage(thumbImage, imageUrl, mContext);
-//		Glide.with(mContext)
-//				.load(imageUrl)
-//				.placeholder(R.drawable.ic_launcher)
-//				.error(R.drawable.no_image_available)
-//				.into(thumbImage);
-
-       /* Picasso.with(mContext)
-                .load(imageUrl)
-                .placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher)
-                .into(thumbImage);*/
-    }
-
-    /**
-     * For Audio Utils
-     **/
-
-    public static void loadProductImage(ImageView thumbImage, String imageUrl, int defaultImage, Context mContext) {
-
-//		Glide.with(mContext)
-//				.load(imageUrl)
-//				.placeholder(R.drawable.ic_launcher)
-//				.error(R.drawable.no_image_available)
-//				.into(thumbImage);
-
-        Picasso.with(mContext)
-                .load(imageUrl)
-                .placeholder(defaultImage)
-                .error(defaultImage)
-                .into(thumbImage);
-    }
-
-    public static double getRoundedDouble(double price) {
-        DecimalFormat df = new DecimalFormat("#.##");
-        return Double.valueOf(df.format(price));
-    }
-
     public static ACProgressFlower showFlowerProgressBar(Context mContext) {
         ACProgressFlower dialog = new ACProgressFlower.Builder(mContext)
                 .direction(ACProgressConstant.DIRECT_CLOCKWISE)
@@ -902,14 +665,6 @@ public class Utils {
                 dialog.dismiss();
             }
         }
-    }
-
-    public static String getBaseUrl(Context mContext) {
-        return mContext.getString(R.string.server_api_url);
-    }
-
-    public static String getMallsId(Context mContext) {
-        return mContext.getString(R.string.mall_id);
     }
 
     public static int getJsonInt(JSONObject jsonObject, String key) {
@@ -1214,10 +969,6 @@ public class Utils {
         if (locale.getLanguage().equals("null")) {
             Locale.setDefault(new Locale("en-US"));
         }
-    }
-
-    public static boolean isLogin() {
-        return SharedPref.read(OnGoConstants.PREF_LOGGED_IN, false);
     }
 
     public static boolean isValidEmail(CharSequence target) {
