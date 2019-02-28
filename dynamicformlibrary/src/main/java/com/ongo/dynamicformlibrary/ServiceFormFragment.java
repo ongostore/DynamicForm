@@ -2,7 +2,7 @@ package com.ongo.dynamicformlibrary;
 
 
 import android.Manifest;
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -93,19 +93,25 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
     private String previewForm = "false";
     private String signaturePath;
     private String postType;
+    private DynamicServiceForm.DynamicServiceFormListener dynamicServiceFormListener;
 
-//    public ServiceFormFragment() {
-//        // Required empty public constructor
-//    }
-
-    public static ServiceFormFragment newInstance() {
-        ServiceFormFragment fragment = new ServiceFormFragment();
-        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @SuppressLint("ValidFragment")
+    public ServiceFormFragment(DynamicServiceForm.DynamicServiceFormListener dynamicServiceFormListener) {
+        this.dynamicServiceFormListener = dynamicServiceFormListener;
     }
+
+    public ServiceFormFragment() {
+        // Required empty public constructor
+    }
+//
+//    public static ServiceFormFragment newInstance() {
+//        ServiceFormFragment fragment = new ServiceFormFragment();
+//        Bundle args = new Bundle();
+////        args.putString(ARG_PARAM1, param1);
+////        args.putString(ARG_PARAM2, param2);
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
 
 
     @Override
@@ -197,35 +203,10 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
 
     @Override
     public void onResponse(String status) {
-        if (status.equalsIgnoreCase("1")) {
-            AlertDialogsUtils.showCustomAlertDialog(mContext, R.layout.thank_you_dialog_fragment, false, new AlertDialogsUtils.CustomAlertInterface() {
-                @Override
-                public void setListenerCustomAlert(View alertView, final AlertDialog alertDialog) {
-//                    ImageView cancel_action = alertView.findViewById(R.id.cancel_action);
-                    TextView okTV = alertView.findViewById(R.id.okTV);
-//                    TextView callHelpline = alertView.findViewById(R.id.callHelpline);
-                    okTV.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            alertDialog.dismiss();
-                            ((Activity) mContext).onBackPressed();
-                        }
-                    });
-//                    contactForm.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            showMessage("Under Development.");
-//                        }
-//                    });
-//                    callHelpline.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            showMessage("Under Development.");
-//                        }
-//                    });
-                    alertDialog.show();
-                }
-            });
+        if (dynamicServiceFormListener != null) {
+            dynamicServiceFormListener.onSuccess(status);
+        } else {
+            Utils.toast("Something went wrong with listener.", mContext);
         }
     }
 
@@ -948,12 +929,68 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                         } else {
                             hashMap.put(tagName, selectedItemCode);
                         }
+                        removeDependencies(tagName);
                         alertDialog.dismiss();
                     }
                 });
                 alertDialog.show();
             }
         });
+    }
+
+
+    void removeDependencies(String mTagName) {
+        for (int i = 0; i < dependentDTOS.size(); i++) {
+            DependentDTO dependentDTO = dependentDTOS.get(i);
+            String tagName = dependentDTO.getTagName();
+            if (mTagName.equalsIgnoreCase(tagName)) {
+//                //remove selectedId
+//                dependentDTO.setSelectedId("");
+                String dependentName = dependentDTO.getDependentName();
+                if (!TextUtils.isEmpty(dependentName)) {
+                    for (int j = 0; j < linearLayout.getChildCount(); j++) {
+                        View view = linearLayout.getChildAt(j).findViewWithTag(dependentName);
+                        if (view instanceof TextView) {
+                            ((TextView) view).setText("");
+                            hashMap.put(dependentName, "");
+                            try {
+                                OnGoConstants.editFieldsHASHMAP.put(dependentName, "");
+                            } catch (Exception e) {
+                                Log.e("exp", e.toString());
+                            }
+                            String mandatory = getMandatory(mTagName);
+                            isManadatory.put(dependentName, mandatory);
+                            removeSelectedId(dependentName);
+                            removeDependencies(dependentName);
+                            break;
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
+
+    void removeSelectedId(String mDependentName) {
+        for (int i = 0; i < dependentDTOS.size(); i++) {
+            DependentDTO dependentDTO = dependentDTOS.get(i);
+            String tagName = dependentDTO.getTagName();
+            if (tagName.equalsIgnoreCase(mDependentName)) {
+                dependentDTO.setSelectedId("");
+                break;
+            }
+        }
+    }
+
+    String getMandatory(String mTagName) {
+        for (ServiceFieldsDto serviceFieldsDto : serviceFieldsDtos) {
+            String tagName = serviceFieldsDto.getName();
+            if (tagName.equalsIgnoreCase(mTagName)) {
+                return serviceFieldsDto.getMandatory();
+            }
+        }
+        return "false";
     }
 
     private void removeDependents(String tagName) {

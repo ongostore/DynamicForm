@@ -496,7 +496,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
             hashMapString.put("userId", OnGoConstants.getMallId());
             hashMapString.put("consumerEmail", OnGoConstants.getConsumerEmail()); //as user sign up by mobileNumber and postfix as '@ongo.com'.
 
-            new APICall(OnGoConstants.getHostUrl(), hashMapFile, hashMapString, mContext, new APICall.APIResponse() {
+            new APICall(OnGoConstants.postServices(), hashMapFile, hashMapString, mContext, new APICall.APIResponse() {
                 @Override
                 public void onResponse(String result) {
 

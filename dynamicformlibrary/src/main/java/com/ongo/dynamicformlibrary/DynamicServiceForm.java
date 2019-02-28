@@ -13,40 +13,35 @@ import android.text.TextUtils;
 
 import com.ongo.dynamicformlibrary.utils.OnGoConstants;
 
-import java.io.File;
-import java.util.HashMap;
-
 public class DynamicServiceForm {
 
     private FragmentActivity activity;
     private int contentFrame;
+    private DynamicServiceFormListener dynamicServiceFormListener;
 
     /**
-     * @param activity     to set fragment using FragmentManager (ex: getActivity())
-     * @param contentFrame layout id to set UI(ex: R.id.contentFrame)
-     * @param baseUrl      IP address for the api call(ex: 123.123.123.123:8081)
-     * @param mallId       from with mall, required the data (ex: 46)
+     * @param activity                   to set fragment using FragmentManager (ex: getActivity())
+     * @param contentFrame               layout id to set UI(ex: R.id.contentFrame)
+     * @param baseUrl                    IP address for the api call(ex: 123.123.123.123:8081)
+     * @param mallId                     from with mall, required the data (ex: 46)
+     * @param dynamicServiceFormListener for sending status.
      */
-    public DynamicServiceForm(FragmentActivity activity, int contentFrame, String baseUrl, String mallId, String consumerEmail) {
+    public DynamicServiceForm(FragmentActivity activity, int contentFrame, String baseUrl, String mallId, String consumerEmail, DynamicServiceFormListener dynamicServiceFormListener) {
         this.activity = activity;
         this.contentFrame = contentFrame;
+        this.dynamicServiceFormListener = dynamicServiceFormListener;
         OnGoConstants.setHostUrl(baseUrl);
         OnGoConstants.setConsumerEmail(consumerEmail);
         OnGoConstants.setMallId(mallId);
     }
 
     /**
-     * @param postType the type of for required (ex: "Posts")
+     * @param postType   the type of for required (ex: "Posts")
      * @param itemJobObj if data is already present (for edit mode)
      */
     public void getForm(String postType, String itemJobObj) {
         createFragment(postType, itemJobObj);
     }
-
-    public void onSuccess(HashMap<String, String> dataHashMap, HashMap<String, File> filesHashMap) {
-
-    }
-
 
     /**
      * This is to add/replace the new fragment in view.
@@ -70,19 +65,25 @@ public class DynamicServiceForm {
 
     }
 
+    /**
+     * @param postType   the type of for required (ex: "Posts")
+     * @param itemJobObj if data is already present (for edit mode)
+     *                   after getting form by using post. setting the view.
+     */
     private void createFragment(String postType, String itemJobObj) {
-        ServiceFormFragment serviceFormFragment = new ServiceFormFragment();
+        ServiceFormFragment serviceFormFragment = new ServiceFormFragment(dynamicServiceFormListener);
         Bundle bundle = new Bundle();
         bundle.putString(OnGoConstants.postType, postType);
-        if (!TextUtils.isEmpty(itemJobObj)){
+        if (!TextUtils.isEmpty(itemJobObj)) {
             bundle.putString(OnGoConstants.jobObj, itemJobObj);
         }
         serviceFormFragment.setArguments(bundle);
-        startTransaction(activity, false, contentFrame, serviceFormFragment, postType);
+        boolean isInit =false;
+        startTransaction(activity, isInit, contentFrame, serviceFormFragment, postType);
     }
 
     public interface DynamicServiceFormListener {
-        public void onSuccess(HashMap<String, String> dataHashMap, HashMap<String, File> filesHashMap);
+        void onSuccess(String status);
     }
 
 
