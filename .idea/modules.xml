@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/DynamicFormApp.iml" filepath="$PROJECT_DIR$/DynamicFormApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/DynamicForm.iml" filepath="$PROJECT_DIR$/.idea/DynamicForm.iml" />
+      <module fileurl="file://D:\Android Workspace\DynamicForm\DynamicFormApp.iml" filepath="D:\Android Workspace\DynamicForm\DynamicFormApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/dynamicformlibrary/dynamicformlibrary.iml" filepath="$PROJECT_DIR$/dynamicformlibrary/dynamicformlibrary.iml" />
     </modules>
