@@ -2,14 +2,16 @@ package com.ongo.dynamicformlibrary;
 
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -30,16 +32,15 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.ongo.dynamicformlibrary.form_utils.DependentDTO;
-import com.ongo.dynamicformlibrary.form_utils.MyMap;
-import com.ongo.dynamicformlibrary.form_utils.ServiceFieldsDto;
-import com.ongo.dynamicformlibrary.form_utils.ServiceUtils;
-import com.ongo.dynamicformlibrary.utils.AlertDialogsUtils;
-import com.ongo.dynamicformlibrary.utils.OnGoConstants;
-import com.ongo.dynamicformlibrary.utils.Utils;
+import com.ongo.dynamicformlibrary.form_utils.FormDependentDTO;
+import com.ongo.dynamicformlibrary.form_utils.FormMyMap;
+import com.ongo.dynamicformlibrary.form_utils.FormServiceFieldsDto;
+import com.ongo.dynamicformlibrary.form_utils.FormServiceUtils;
+import com.ongo.dynamicformlibrary.utils.FormAlertDialogsUtils;
+import com.ongo.dynamicformlibrary.utils.FormConstants;
+import com.ongo.dynamicformlibrary.utils.FormUtils;
 
 import net.alhazmy13.mediapicker.Image.ImagePicker;
 
@@ -57,9 +58,9 @@ import java.util.Map;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class ServiceFormFragment extends BaseFragment implements ServiceFormPresenter.ServiceFormListener {
+public class ServiceFormActivityForm extends FormBaseActivity implements ServiceFormPresenter.ServiceFormListener {
     public static final int REQUEST_FILE_SELECT = 1;
-    final static String TAG = "ServiceFormFragment";
+    final static String TAG = "ServiceFormActivityForm";
     private static final int RP_READ_STORAGE = 126;
     private static final int REQ_LOCATION_CODE = 1432;
     private static final int REQ_CAMERA_CODE = 1452;
@@ -69,15 +70,11 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
     String[] cameraPerms = new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     Context mContext;
-    Spinner categorySpinner;
     Button submitBTN;
-    LinearLayout rentLL1, sell, photosLL, tempImage1, linearLayout;
-    EditText withFuel, withoutFuel, price;
+    LinearLayout linearLayout;
     ServiceFormPresenter serviceFormPresenter;
-    ImageView image1, image2, image3, image4, image5, image6;
-    ImageView tempImage2, tempImage3, tempImage4, tempImage5, tempImage6;
     ListView lView;
-    RelativeLayout rlOk, spinnerRL;
+    RelativeLayout rlOk;
     String[] multiStringArry;
     TextView multiEditText;
     MultiSelectInterface multiSelectListener;
@@ -87,25 +84,22 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
     String upload_key_tv, upload_mandatory_tv;
     TextView mAttachment_name_tv;
     String itemJob;
-    private ArrayList<ServiceFieldsDto> serviceFieldsDtos;
-    private ArrayList<DependentDTO> dependentDTOS = new ArrayList<>();
+    LinearLayout backIV;
+    TextView titleTV;
+    private ArrayList<FormServiceFieldsDto> formServiceFieldsDtos;
+    private ArrayList<FormDependentDTO> formDependentDTOS = new ArrayList<>();
     private HashMap<String, String> isManadatory = new HashMap<>();
     private String previewForm = "false";
     private String signaturePath;
     private String postType;
-    private DynamicServiceForm.DynamicServiceFormListener dynamicServiceFormListener;
+    private ArrayList<String> selectedList;
 
-    @SuppressLint("ValidFragment")
-    public ServiceFormFragment(DynamicServiceForm.DynamicServiceFormListener dynamicServiceFormListener) {
-        this.dynamicServiceFormListener = dynamicServiceFormListener;
-    }
+//    public ServiceFormFragmentForm() {
+//        // Required empty public constructor
+//    }
 
-    public ServiceFormFragment() {
-        // Required empty public constructor
-    }
-//
-//    public static ServiceFormFragment newInstance() {
-//        ServiceFormFragment fragment = new ServiceFormFragment();
+//    public static ServiceFormActivityForm newInstance() {
+//        ServiceFormActivityForm fragment = new ServiceFormActivityForm();
 //        Bundle args = new Bundle();
 ////        args.putString(ARG_PARAM1, param1);
 ////        args.putString(ARG_PARAM2, param2);
@@ -113,190 +107,141 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
 //        return fragment;
 //    }
 
-
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_service_form, container, false);
-        mContext = getActivity();
-        serviceFormPresenter = new ServiceFormPresenter(ServiceFormFragment.this, this);
-        initView(view);
-        Bundle bundle = getArguments();
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setContentView(R.layout.fragment_service_form);
+        super.onCreate(savedInstanceState);
+        mContext = this;
+        serviceFormPresenter = new ServiceFormPresenter(ServiceFormActivityForm.this, this);
+        Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            postType = bundle.getString(OnGoConstants.postType);
-            itemJob = bundle.getString(OnGoConstants.jobObj);
+            postType = bundle.getString("typeName");
+            titleTV.setText(postType);
+            itemJob = bundle.getString("jsonObj");
             if (itemJob != null) {
-                OnGoConstants.editFieldsHASHMAP = serviceFormPresenter.getHashMap(itemJob);
-                OnGoConstants.editFieldsImagesHashMap = serviceFormPresenter.getImagesHashMap(itemJob);
+                FormConstants.editFieldsHASHMAP = serviceFormPresenter.getHashMap(itemJob);
+                FormConstants.editFieldsImagesHashMap = serviceFormPresenter.getImagesHashMap(itemJob);
             }
         }
-        serviceFormPresenter.getServiceFields(OnGoConstants.getHostUrl(), postType, OnGoConstants.mallId);
+        if (FormUtils.isNetworkAvailable(mContext)) {
+//            serviceFormPresenter.getServiceFields(postType);
+        } else {
+            showMessage(getString(R.string.no_network));
+        }
 
-        return view;
     }
 
     @Override
-    public void initView(View view) {
-        categorySpinner = view.findViewById(R.id.categorySpinner);
-        submitBTN = view.findViewById(R.id.submitBTN);
-        rentLL1 = view.findViewById(R.id.rentLL1);
-        sell = view.findViewById(R.id.sell);
-        withFuel = view.findViewById(R.id.withFuel);
-        withoutFuel = view.findViewById(R.id.withoutFuel);
-        price = view.findViewById(R.id.price);
-        spinnerRL = view.findViewById(R.id.spinnerRL);
-        photosLL = view.findViewById(R.id.photosLL);
-        image1 = view.findViewById(R.id.image1);
-        image2 = view.findViewById(R.id.image2);
-        image3 = view.findViewById(R.id.image3);
-        image4 = view.findViewById(R.id.image4);
-        image5 = view.findViewById(R.id.image5);
-        image6 = view.findViewById(R.id.image6);
-        tempImage2 = view.findViewById(R.id.tempImage2);
-        tempImage3 = view.findViewById(R.id.tempImage3);
-        tempImage4 = view.findViewById(R.id.tempImage4);
-        tempImage5 = view.findViewById(R.id.tempImage5);
-        tempImage6 = view.findViewById(R.id.tempImage6);
-        tempImage1 = view.findViewById(R.id.tempImage1);
-        linearLayout = view.findViewById(R.id.linearLayout);
-        initListeners();
+    public void initViews() {
+        submitBTN = findViewById(R.id.submitBTN);
+        linearLayout = findViewById(R.id.linearLayout);
+        AppBarLayout app_bar_layout = findViewById(R.id.app_bar_layout);
+        app_bar_layout.setVisibility(View.VISIBLE);
+        backIV = findViewById(R.id.backIV);
+        titleTV = findViewById(R.id.titleTV);
     }
 
     @Override
-    public void initListeners() {
-        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                String selectedItem = categorySpinner.getSelectedItem().toString();
-                hashMap.put("EquipmentFor", selectedItem);
-                if (selectedItem.equalsIgnoreCase("Rent")) {
-                    price.setText("");
-                    rentLL1.setVisibility(View.VISIBLE);
-                    sell.setVisibility(View.GONE);
-                } else {
-                    withFuel.setText("");
-                    withoutFuel.setText("");
-                    rentLL1.setVisibility(View.GONE);
-                    sell.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        photosLL.setOnClickListener(new View.OnClickListener() {
+    public void registerListeners() {
+        backIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                serviceFormPresenter.getImagesList();
+                finish();
             }
         });
+
         submitBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getValues(true);
+                if (formServiceFieldsDtos != null && formServiceFieldsDtos.size() > 0)
+                    getValues(true);
+                else {
+                    showMessage("Form not available");
+                }
             }
         });
     }
 
     @Override
     public void onResponse(String status) {
-        if (dynamicServiceFormListener != null) {
-            dynamicServiceFormListener.onSuccess(status);
-        } else {
-            Utils.toast("Something went wrong with listener.", mContext);
+        if (status.equalsIgnoreCase("1")) {
+            FormAlertDialogsUtils.showCustomAlertDialog(mContext, R.layout.thank_you_dialog_fragment, false, new FormAlertDialogsUtils.CustomAlertInterface() {
+                @Override
+                public void setListenerCustomAlert(View alertView, final AlertDialog alertDialog) {
+//                    ImageView cancel_action = alertView.findViewById(R.id.cancel_action);
+                    TextView okTV = alertView.findViewById(R.id.okTV);
+//                    TextView callHelpline = alertView.findViewById(R.id.callHelpline);
+                    okTV.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            alertDialog.dismiss();
+                            finish();
+                        }
+                    });
+//                    contactForm.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View view) {
+//                            showMessage("Under Development.");
+//                        }
+//                    });
+//                    callHelpline.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View view) {
+//                            showMessage("Under Development.");
+//                        }
+//                    });
+                    alertDialog.show();
+                }
+            });
         }
     }
 
     @Override
     public void onImageSelected(ArrayList<String> imagesList) {
-        Log.d(TAG, "Image selected list");
-        tempImage1.setVisibility(View.VISIBLE);
-        Utils.setVisibility(image1, View.GONE);
-        Utils.setVisibility(tempImage2, View.VISIBLE);
-        Utils.setVisibility(image2, View.GONE);
-        Utils.setVisibility(tempImage3, View.VISIBLE);
-        Utils.setVisibility(image3, View.GONE);
-        Utils.setVisibility(tempImage4, View.VISIBLE);
-        Utils.setVisibility(image4, View.GONE);
-        Utils.setVisibility(tempImage5, View.VISIBLE);
-        Utils.setVisibility(image5, View.GONE);
-        Utils.setVisibility(tempImage6, View.VISIBLE);
-        Utils.setVisibility(image6, View.GONE);
 
-        for (int i = 0; i < imagesList.size(); i++) {
-            if (i == 0) {
-                tempImage1.setVisibility(View.GONE);
-                Utils.setVisibility(image1, View.VISIBLE);
-                Utils.loadImage(image1, imagesList.get(i), mContext);
-            } else if (i == 1) {
-                Utils.setVisibility(tempImage2, View.GONE);
-                Utils.setVisibility(image2, View.VISIBLE);
-                Utils.loadImage(image2, imagesList.get(i), mContext);
-            } else if (i == 2) {
-                Utils.setVisibility(tempImage3, View.GONE);
-                Utils.setVisibility(image3, View.VISIBLE);
-                Utils.loadImage(image3, imagesList.get(i), mContext);
-            } else if (i == 3) {
-                Utils.setVisibility(tempImage4, View.GONE);
-                Utils.setVisibility(image4, View.VISIBLE);
-                Utils.loadImage(image4, imagesList.get(i), mContext);
-            } else if (i == 4) {
-                Utils.setVisibility(tempImage5, View.GONE);
-                Utils.setVisibility(image5, View.VISIBLE);
-                Utils.loadImage(image5, imagesList.get(i), mContext);
-            } else if (i == 5) {
-                Utils.setVisibility(tempImage6, View.GONE);
-                Utils.setVisibility(image6, View.VISIBLE);
-                Utils.loadImage(image6, imagesList.get(i), mContext);
-            }
-        }
     }
 
     @Override
-    public void setLayout(ArrayList<ServiceFieldsDto> serviceFieldsDtos) {
-        this.serviceFieldsDtos = serviceFieldsDtos;
+    public void setLayout(ArrayList<FormServiceFieldsDto> formServiceFieldsDtos) {
+        this.formServiceFieldsDtos = formServiceFieldsDtos;
         addLayouts();
     }
 
     @Override
     public void showMessage(String msg) {
-        Utils.toast(msg, mContext);
+        FormUtils.toast(msg, mContext);
     }
 
     private void addLayouts() {
         Log.e("add layout", ".............");
-        for (int i = 0; i < serviceFieldsDtos.size(); i++) {
-            ServiceFieldsDto serviceFieldsDto = serviceFieldsDtos.get(i);
-            final String tagName = serviceFieldsDto.getName();
-            final String mandatory = serviceFieldsDto.getMandatory();
-            if (serviceFieldsDto.getType().equalsIgnoreCase("Small Text")) {
+        for (int i = 0; i < formServiceFieldsDtos.size(); i++) {
+            FormServiceFieldsDto formServiceFieldsDto = formServiceFieldsDtos.get(i);
+            final String tagName = formServiceFieldsDto.getName();
+            final String mandatory = formServiceFieldsDto.getMandatory();
+            final String isMultiSelect = formServiceFieldsDto.getMultiselect();
+            if (formServiceFieldsDto.getType().equalsIgnoreCase("Small Text")) {
                 addSmallText(tagName, mandatory);
-            } else if (serviceFieldsDto.getType().equalsIgnoreCase("Numeric Text")) {
+            } else if (formServiceFieldsDto.getType().equalsIgnoreCase("Numeric Text")) {
                 addNumericText(tagName, mandatory);
-            } else if (serviceFieldsDto.getType().equalsIgnoreCase("Large Text")) {
+            } else if (formServiceFieldsDto.getType().equalsIgnoreCase("Large Text")) {
                 addLargeText(tagName, mandatory);
-            } else if (serviceFieldsDto.getType().equalsIgnoreCase("Radio OR CheckBox")) {
-                Log.e("allowed values", ">>>>>>>>....." + serviceFieldsDto.allowedValues);
+            } else if (formServiceFieldsDto.getType().equalsIgnoreCase("Radio OR CheckBox")) {
+                Log.e("allowed values", ">>>>>>>>....." + formServiceFieldsDto.allowedValues);
                 List<String> allowedValuesArry = new ArrayList<String>
-                        (Arrays.asList(serviceFieldsDto.allowedValues.split("\\|")));
+                        (Arrays.asList(formServiceFieldsDto.allowedValues.split("\\|")));
                 addRadioButton(tagName, mandatory, allowedValuesArry);
-            } else if (serviceFieldsDto.getType().equalsIgnoreCase("Selection")) {
-                boolean isMultiset = Boolean.valueOf(serviceFieldsDto.getMultiselect());
-                String allowedValues = serviceFieldsDto.getAllowedValues();
+            } else if (formServiceFieldsDto.getType().equalsIgnoreCase("Selection")) {
+                boolean isMultiset = Boolean.valueOf(formServiceFieldsDto.getMultiselect());
+                String allowedValues = formServiceFieldsDto.getAllowedValues();
                 //changed due to realm
-                // HashMap<String, String> stringStringHashMap = serviceFieldsDto.getAllowedValuesResults();
                 HashMap<String, String> stringStringHashMap = new HashMap<>();
-                ArrayList<MyMap> arry = serviceFieldsDto.getAllowedValuesResults();
+                ArrayList<FormMyMap> arry = formServiceFieldsDto.getAllowedValuesResults();
                 if (arry != null && arry.size() > 0) {
                     for (int k = 0; k < arry.size(); k++) {
                         try {
-                            MyMap map = arry.get(k);
+                            FormMyMap map = arry.get(k);
                             JSONObject obj = new JSONObject();
                             obj.put(map.getKey(), map.getValue());
-                            // obj = arry.getJSONObject(k);
                             Iterator<?> keys = obj.keys();
 
                             while (keys.hasNext()) {
@@ -306,7 +251,6 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                                     stringStringHashMap.put(key, value);
                                 }
                             }
-
                         } catch (JSONException e) {
                             Log.e("json exp", ">>>>>>>>>>" + e.getLocalizedMessage());
                         }
@@ -325,10 +269,8 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                         Iterator it = stringStringHashMap.entrySet().iterator();
                         while (it.hasNext()) {
                             Map.Entry pair = (Map.Entry) it.next();
-
                             stringArrayListKeys.add(pair.getKey().toString());
                             stringArrayListValues.add(pair.getValue().toString());
-
                         }
                     } else {
                         if (allowedValues.contains("|")) {
@@ -337,55 +279,65 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                     }
                 }
 
-
                 if (stringArrayListKeys.size() > 0) {
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-                    LinearLayout innerLinearLayout = ServiceUtils.getSelectionViewForQColumn(mandatory, mContext, params, tagName, isMultiset, stringArrayListKeys, stringArrayListValues, new ServiceUtils.SelectionInterfaceForQColums() {
+                    LinearLayout innerLinearLayout = FormServiceUtils.getSelectionViewForQColumn(mandatory, mContext, params, tagName, isMultiset, stringArrayListKeys, stringArrayListValues, new FormServiceUtils.SelectionInterfaceForQColums() {
                         @Override
-                        public void selectionListener(boolean isMultiset, final ArrayList<String> keysArray, final ArrayList<String> valuesArray, TextView textViewMain) {
+                        public void selectionListener(boolean isMultiset, final ArrayList<String> keysArray, ArrayList<String> valuesArray, TextView textViewMain) {
                             final ArrayList<String> finalStrings = keysArray;
                             final ArrayList<String> finalValuesArray = valuesArray;
                             final TextView finalEditText = textViewMain;
-                            String dependencyName = serviceFormPresenter.getDependencyNameList(serviceFieldsDtos, tagName);
-                            DependentDTO dependentDTO = new DependentDTO();
-                            dependentDTO.setDependentName(dependencyName);
-                            dependentDTO.setKeyArray(keysArray);
-                            dependentDTO.setValueArray(valuesArray);
-                            dependentDTO.setTagName(tagName);
-                            dependentDTO.setTextView(textViewMain);
-                            dependentDTOS.add(dependentDTO);
+                            String dependencyName = serviceFormPresenter.getDependencyNameList(formServiceFieldsDtos, tagName);
+                            FormDependentDTO formDependentDTO = new FormDependentDTO();
+                            formDependentDTO.setDependentName(dependencyName);
+                            formDependentDTO.setKeyArray(keysArray);
+                            formDependentDTO.setTagName(tagName);
+                            formDependentDTO.setTextView(textViewMain);
+                            formDependentDTOS.add(formDependentDTO);
                             if (keysArray != null && !isMultiset) {
                                 textViewMain.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         ArrayList<String> subKeysArray = new ArrayList<>();
-                                        ArrayList<String> subValueArray = new ArrayList<>();
-                                        DependentDTO dependentDTO1 = serviceFormPresenter.checkDependency(dependentDTOS, tagName);
-                                        if (dependentDTO1 != null) {
-                                            String selectedId = dependentDTO1.getSelectedId();
+                                        ArrayList<String> subValuesArray = new ArrayList<>();
+                                        FormDependentDTO formDependentDTO1 = serviceFormPresenter.checkDependency(formDependentDTOS, tagName);
+                                        if (formDependentDTO1 != null) {
+                                            String selectedId = formDependentDTO1.getSelectedId();
                                             if (TextUtils.isEmpty(selectedId)) {
-                                                Utils.toast("Please select " + dependentDTO1.getTagName() + " filed", mContext);
+                                                FormUtils.toast("Please select " + formDependentDTO1.getTagName() + " filed", mContext);
                                                 return;
                                             }
-
                                             for (int i = 0; i < keysArray.size(); i++) {
                                                 if (keysArray.get(i).contains(selectedId)) {
                                                     subKeysArray.add(keysArray.get(i).substring(0, keysArray.get(i).lastIndexOf("(")));
-                                                    subValueArray.add(valuesArray.get(i));
+                                                    subValuesArray.add(finalValuesArray.get(i));
                                                 }
                                             }
                                         } else {
                                             for (int i = 0; i < keysArray.size(); i++) {
                                                 subKeysArray.add(keysArray.get(i).substring(0, keysArray.get(i).lastIndexOf("(")));
-                                                subValueArray.add(valuesArray.get(i));
+                                                subValuesArray.add(finalValuesArray.get(i));
                                             }
                                         }
                                         if (subKeysArray.size() > 0) {
-                                            showSingleSelection(tagName, subKeysArray, subValueArray, finalEditText, keysArray);
+                                            showSingleSelection(tagName, subKeysArray, subValuesArray, finalEditText, keysArray);
                                         } else {
-                                            Utils.toast("No " + tagName + " available", mContext);
+                                            FormUtils.toast("No " + tagName + " available", mContext);
                                         }
+                                    }
+                                });
+                            } else if (keysArray != null && isMultiset) {
+                                textViewMain.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        String[] list = keysArray.toArray(new String[0]);
+                                        showMultiSelection(tagName, list, finalEditText, new MultiSelectInterface() {
+                                            @Override
+                                            public void multiSelectListener(String selectedName) {
+                                                finalEditText.setText(selectedName);
+                                            }
+                                        });
                                     }
                                 });
                             }
@@ -397,11 +349,9 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
 
                     linearLayout.addView(innerLinearLayout, params);
 
-
                 } else {
-
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                    LinearLayout innerLinearLayout = ServiceUtils.getSelectionView(mandatory, mContext, params, tagName, isMultiset, stringArray, new ServiceUtils.SelectionInterface() {
+                    LinearLayout innerLinearLayout = FormServiceUtils.getSelectionView(mandatory, mContext, params, tagName, isMultiset, stringArray, new FormServiceUtils.SelectionInterface() {
                         @Override
                         public void selectionListener(boolean isMultiset, String[] stringArray, TextView textViewMain) {
                             final String[] finalStrings = stringArray;
@@ -418,7 +368,6 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                                         });
                                     }
                                 });
-
 
                             } else if (stringArray != null && !isMultiset) {
                                 textViewMain.setOnClickListener(new View.OnClickListener() {
@@ -437,36 +386,38 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                     linearLayout.addView(innerLinearLayout, params);
                 }
 
-            } else if (serviceFieldsDto.getType().equalsIgnoreCase("Attachment")) {
-                photosLL.setVisibility(View.VISIBLE);
-                hashMap.put(tagName, "");
-                isManadatory.put(tagName, mandatory);
+            } else if (formServiceFieldsDto.getType().equalsIgnoreCase("Attachment")) {
+                if (isMultiSelect.equalsIgnoreCase("true")) {
+                    hashMap.put(tagName, "");
+                    isManadatory.put(tagName, mandatory);
+                } else {
+                    //As per layout this is not required.
+                    final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    FormServiceUtils.getAttachmentView(mandatory, mContext, params, tagName, new FormServiceUtils.AttachmentInterface() {
+                        @Override
+                        public void attachmentListener(LinearLayout innerLinearLayout, final ImageView view, final TextView textView) {
+                            linearLayout.addView(innerLinearLayout, params);
+                            if (textView != null) {
+                                textView.setInputType(InputType.TYPE_NULL);
+                            }
+                            hashMap.put(tagName, "");
+                            isManadatory.put(tagName, mandatory);
+                            view.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    attachmentImageView = view;
+                                    showCameraGalleryAlert(tagName, textView);
+                                }
+                            });
+                        }
+                    });
+                }
 
-                //As per layout this is not required.
-//                final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//                ServiceUtils.getAttachmentView(mandatory, mContext, params, tagName, new ServiceUtils.AttachmentInterface() {
-//                    @Override
-//                    public void attachmentListener(LinearLayout innerLinearLayout, final ImageView view, final TextView textView) {
-//                        linearLayout.addView(innerLinearLayout, params);
-//                        if (textView != null) {
-//                            textView.setInputType(InputType.TYPE_NULL);
-//                        }
-//                        hashMap.put(tagName, "");
-//                        isManadatory.put(tagName, mandatory);
-//                        view.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                attachmentImageView = view;
-//                                showCameraGalleryAlert(tagName, textView);
-//                            }
-//                        });
-//                    }
-//                });
 
-            } else if (serviceFieldsDto.getType().equalsIgnoreCase("Date Time")) {
+            } else if (formServiceFieldsDto.getType().equalsIgnoreCase("Date Time")) {
 
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                LinearLayout innerLinearLayout = ServiceUtils.getDateTimeView(mandatory, mContext, params, tagName, "DateTime", new ServiceUtils.DateTimeInterface() {
+                LinearLayout innerLinearLayout = FormServiceUtils.getDateTimeView(mandatory, mContext, params, tagName, "DateTime", new FormServiceUtils.DateTimeInterface() {
                     @Override
                     public void dateTimeListener(final TextView textView, ImageView imageView) {
                         if (textView != null) {
@@ -476,7 +427,7 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                         imageView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                ServiceUtils.showDateTimePicker(mContext, new ServiceUtils.DatePickerInterface() {
+                                FormServiceUtils.showDateTimePicker(mContext, new FormServiceUtils.DatePickerInterface() {
                                     @Override
                                     public void datePickerInterface(String date) {
                                         textView.setText(date);
@@ -487,11 +438,11 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                     }
                 });
                 linearLayout.addView(innerLinearLayout, params);
-            } else if (serviceFieldsDto.getType().equalsIgnoreCase("Date")) {
+            } else if (formServiceFieldsDto.getType().equalsIgnoreCase("Date")) {
 
 
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                LinearLayout innerLinearLayout = ServiceUtils.getDateTimeView(mandatory, mContext, params, tagName, "Date", new ServiceUtils.DateTimeInterface() {
+                LinearLayout innerLinearLayout = FormServiceUtils.getDateTimeView(mandatory, mContext, params, tagName, "Date", new FormServiceUtils.DateTimeInterface() {
                     @Override
                     public void dateTimeListener(final TextView textView, ImageView imageView) {
                         if (textView != null) {
@@ -500,7 +451,7 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                         imageView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                ServiceUtils.showDatePicker(mContext, new ServiceUtils.DatePickerInterface() {
+                                FormServiceUtils.showDatePicker(mContext, new FormServiceUtils.DatePickerInterface() {
                                     @Override
                                     public void datePickerInterface(String date) {
                                         textView.setText(date);
@@ -513,10 +464,10 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
 
                 linearLayout.addView(innerLinearLayout, params);
 
-            } else if (serviceFieldsDto.getType().equalsIgnoreCase("Time")) {
+            } else if (formServiceFieldsDto.getType().equalsIgnoreCase("Time")) {
 
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                LinearLayout innerLinearLayout = ServiceUtils.getDateTimeView(mandatory, mContext, params, tagName, "Time", new ServiceUtils.DateTimeInterface() {
+                LinearLayout innerLinearLayout = FormServiceUtils.getDateTimeView(mandatory, mContext, params, tagName, "Time", new FormServiceUtils.DateTimeInterface() {
                     @Override
                     public void dateTimeListener(final TextView textView, ImageView imageView) {
                         if (textView != null) {
@@ -525,7 +476,7 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                         imageView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                ServiceUtils.showTimePicker(mContext, new ServiceUtils.TimePickerInterface() {
+                                FormServiceUtils.showTimePicker(mContext, new FormServiceUtils.TimePickerInterface() {
                                     @Override
                                     public void timePickerInterface(String date) {
                                         textView.setText(date);
@@ -537,28 +488,28 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                 });
                 linearLayout.addView(innerLinearLayout, params);
 
-            } else if (serviceFieldsDto.getType().equalsIgnoreCase("Geo Location")) {
+            } else if (formServiceFieldsDto.getType().equalsIgnoreCase("Geo Location")) {
 //                locationTAGNAME = tagName;
-//                SharedPreferences sharedPreferences = mContext.getSharedPreferences(OnGoConstants.PREF_NAME, Context.MODE_PRIVATE);
-//                Utils.turnGPSOn(getActivity(), sharedPreferences.edit(), true);
+//                SharedPreferences sharedPreferences = mContext.getSharedPreferences(FormConstants.PREF_NAME, Context.MODE_PRIVATE);
+//                FormUtils.turnGPSOn(getActivity(), sharedPreferences.edit(), true);
 //
 //                isPermissionGranted();
 
-            } else if (serviceFieldsDto.getType().equalsIgnoreCase("Signature")) {
+            } else if (formServiceFieldsDto.getType().equalsIgnoreCase("Signature")) {
                 addSignature(tagName, mandatory);
             }
         }
 
-        if ((OnGoConstants.editFieldsHASHMAP != null && !OnGoConstants.editFieldsHASHMAP.isEmpty()) || previewForm.equalsIgnoreCase("true")) {
+        if (!FormConstants.editFieldsHASHMAP.isEmpty() || previewForm.equalsIgnoreCase("true")) {
             getValues(false);
-            if (OnGoConstants.editFieldsHASHMAP != null && !OnGoConstants.editFieldsImagesHashMap.isEmpty() && OnGoConstants.editFieldsImagesHashMap.size() > 0) {
+            if (!FormConstants.editFieldsImagesHashMap.isEmpty() && FormConstants.editFieldsImagesHashMap.size() > 0) {
                 ArrayList<String> arrayList = new ArrayList<>();
                 HashMap<String, File> map = new HashMap<>();
-                for (String key : OnGoConstants.editFieldsImagesHashMap.keySet()) {
-                    String value = OnGoConstants.editFieldsImagesHashMap.get(key);
+                for (String key : FormConstants.editFieldsImagesHashMap.keySet()) {
+                    String value = FormConstants.editFieldsImagesHashMap.get(key);
                     arrayList.add(value);
                     try {
-                        File file = new File(Utils.getPath(mContext, Uri.parse(value)));
+                        File file = new File(FormUtils.getPath(mContext, Uri.parse(value)));
                         map.put(key, file);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -569,20 +520,12 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
             }
         }
 
-        /*if (SharedPref.read(OnGoConstants.userRoleName, "").equalsIgnoreCase("Inspector")) {
-            // rlSubmit.setVisibility(View.GONE);
-            fab_check.setVisibility(View.GONE);
-        } else {
-            // rlSubmit.setVisibility(View.VISIBLE);
-            fab_check.setVisibility(View.VISIBLE);
-        }*/
-
     }
 
     private String getTagValue(String tagName) {
         try {
             JSONObject jsonObject = new JSONObject(itemJob);
-            return Utils.checkJsonObjStr(jsonObject, tagName);
+            return FormUtils.checkJsonObjStr(jsonObject, tagName);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -591,15 +534,15 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
 
     private void addSmallText(String tagName, String mandatory) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        RelativeLayout innerRelativeLayout = ServiceUtils.getSmallEditTextWithImageView(mContext, params, tagName, false, mandatory);
+        RelativeLayout innerRelativeLayout = FormServiceUtils.getSmallEditTextWithImageView(mContext, params, tagName, false, mandatory);
         linearLayout.addView(innerRelativeLayout, params);
     }
 
     private void addSignature(String tagName, String mandatory) {
-        Utils.toast("Not Added in this Project", mContext);
+        FormUtils.toast("Not Added in this Project", mContext);
 //        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
 //                ViewGroup.LayoutParams.WRAP_CONTENT);
-//        // LinearLayout innerLinearLayout = ServiceUtils.getSignatureLayout(mContext, params, tagName, mandatory);
+//        // LinearLayout innerLinearLayout = FormServiceUtils.getSignatureLayout(mContext, params, tagName, mandatory);
 //
 //        LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
 //                LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -642,13 +585,13 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
 
     private void addNumericText(String tagName, String mandatory) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        RelativeLayout innerRelativeLayout = ServiceUtils.getNumericEditText(mContext, params, tagName, false, mandatory);
+        RelativeLayout innerRelativeLayout = FormServiceUtils.getNumericEditText(mContext, params, tagName, false, mandatory);
         linearLayout.addView(innerRelativeLayout, params);
     }
 
     private void addLargeText(String tagName, String mandatory) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        LinearLayout innerLinearLayout = ServiceUtils.getLargeEditText(mContext, params, tagName, mandatory);
+        LinearLayout innerLinearLayout = FormServiceUtils.getLargeEditText(mContext, params, tagName, mandatory);
         linearLayout.addView(innerLinearLayout, params);
     }
 
@@ -656,35 +599,37 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        LinearLayout innerLinearLayout = ServiceUtils.getRadioButton(mContext, params, tagName, mandatory,
+        LinearLayout innerLinearLayout = FormServiceUtils.getRadioButton(mContext, params, tagName, mandatory,
                 allowedValuesArry);
         linearLayout.addView(innerLinearLayout, params);
     }
 
     private void getValues(boolean isSubmitClicked) {
 
-        for (ServiceFieldsDto serviceFieldsDto : serviceFieldsDtos) {
-            String tagName = serviceFieldsDto.getName();
-            String madatory = serviceFieldsDto.getMandatory();
-            String allowedValues = serviceFieldsDto.getAllowedValues();
-            String type = serviceFieldsDto.getType();
+        for (FormServiceFieldsDto formServiceFieldsDto : formServiceFieldsDtos) {
+            String tagName = formServiceFieldsDto.getName();
+            String madatory = formServiceFieldsDto.getMandatory();
+            String allowedValues = formServiceFieldsDto.getAllowedValues();
+            String type = formServiceFieldsDto.getType();
             Log.d("SaleRegisterFragTagName", tagName);
 
             for (int i = 0; i < linearLayout.getChildCount(); i++) {
 //                if (tagName.equalsIgnoreCase("Price With Fuel")) {
-//                    String str = OnGoConstants.editFieldsHASHMAP.get("Price With Fuel");
+//                    String str = FormConstants.editFieldsHASHMAP.get("Price With Fuel");
 //                    withFuel.setText(str);
 //                    break;
 //                } else if (tagName.equalsIgnoreCase("Price Without Fuel")) {
-//                    String str = OnGoConstants.editFieldsHASHMAP.get("Price Without Fuel");
+//                    String str = FormConstants.editFieldsHASHMAP.get("Price Without Fuel");
 //                    withoutFuel.setText(str);
 //                    break;
-//                } else if (tagName.equalsIgnoreCase("Price")) {
-//                    String str = OnGoConstants.editFieldsHASHMAP.get("Price");
+//                }
+//                else if (tagName.equalsIgnoreCase("Price")) {
+//                    String str = FormConstants.editFieldsHASHMAP.get("Price");
 //                    price.setText(str);
 //                    break;
-//                } else if (tagName.equalsIgnoreCase("EquipmentFor")) {
-//                    String str = OnGoConstants.editFieldsHASHMAP.get("EquipmentFor");
+//                }
+//                else if (tagName.equalsIgnoreCase("EquipmentFor")) {
+//                    String str = FormConstants.editFieldsHASHMAP.get("EquipmentFor");
 //                    categorySpinner.setSelection(serviceFormPresenter.getSelectedItem(categorySpinner, str));
 //                    break;
 //                }
@@ -693,11 +638,11 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                 //Log.e("ServiceFormFrag", "getValues" + tagName);
                 if (view instanceof EditText) {
                     String tagNameValue = ((EditText) view).getText().toString();
-                    if (!OnGoConstants.editFieldsHASHMAP.isEmpty()) {
-                        ((EditText) view).setText(OnGoConstants.editFieldsHASHMAP.get(tagName));
+                    if (!FormConstants.editFieldsHASHMAP.isEmpty()) {
+                        ((EditText) view).setText(FormConstants.editFieldsHASHMAP.get(tagName));
                         if (tagName.equalsIgnoreCase("photo")) {
-                            if (OnGoConstants.editFieldsHASHMAP.containsKey("Photo_URL")) {
-                                ((EditText) view).setText(OnGoConstants.editFieldsHASHMAP.get("Photo_URL"));
+                            if (FormConstants.editFieldsHASHMAP.containsKey("Photo_URL")) {
+                                ((EditText) view).setText(FormConstants.editFieldsHASHMAP.get("Photo_URL"));
                             }
                         }
                     }
@@ -710,14 +655,14 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                     break;
                 } else if (view instanceof TextView) {
                     String tagNameValue = ((TextView) view).getText().toString();
-                    if (!OnGoConstants.editFieldsHASHMAP.isEmpty()) {
-                        ((TextView) view).setText(OnGoConstants.editFieldsHASHMAP.get(tagName));
+                    if (!FormConstants.editFieldsHASHMAP.isEmpty()) {
+                        ((TextView) view).setText(FormConstants.editFieldsHASHMAP.get(tagName));
                     }
                     if (!type.equalsIgnoreCase("Attachment") && !allowedValues.contains("q:")) {
                         hashMap.put(tagName, tagNameValue);
                         isManadatory.put(tagName, madatory);
-                    } else if (!type.equalsIgnoreCase("Attachment") && allowedValues.contains("q:") && !isSubmitClicked) {
-                        hashMap.put(tagName, getTagNameValue(tagName));
+                    } else if (!type.equalsIgnoreCase("Attachment") && allowedValues.contains("q:") && !hashMap.containsKey(tagName)) {
+                        hashMap.put(tagName, tagNameValue);
                         isManadatory.put(tagName, madatory);
                     }
                     break;
@@ -732,7 +677,7 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
 
                         // Log.e("selecteion is", ">>>>>>>>>>.." + selection);
 
-                        if (!OnGoConstants.editFieldsHASHMAP.isEmpty()) {
+                        if (!FormConstants.editFieldsHASHMAP.isEmpty()) {
                             Log.e("selection is", ">>>>>>>>>>>>." + selection);
                         }
 
@@ -741,7 +686,7 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                             isManadatory.put(tagName, madatory);
                         }
                     } else {
-                        if (!OnGoConstants.editFieldsHASHMAP.isEmpty()) {
+                        if (!FormConstants.editFieldsHASHMAP.isEmpty()) {
                             radioGroup.getChildCount();
                             for (int j = 0; j < radioGroup.getChildCount(); j++) {
                                 int id = radioGroup.getChildAt(j).getId();
@@ -749,7 +694,7 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                                 RadioButton btn = (RadioButton) rbv.findViewById(id);
                                 String btnName = btn.getText().toString();
 
-                                if (OnGoConstants.editFieldsHASHMAP.get(tagName) != null && OnGoConstants.editFieldsHASHMAP.get(tagName).equalsIgnoreCase(btnName))
+                                if (FormConstants.editFieldsHASHMAP.get(tagName) != null && FormConstants.editFieldsHASHMAP.get(tagName).equalsIgnoreCase(btnName))
                                     btn.setChecked(true);
 
                                 // Log.e("selection is", ">>>>>>>>>>>>." + btn.getText().toString());
@@ -779,13 +724,13 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                             ((ImageView) view).setEnabled(false);
                         }
 
-                        if (!OnGoConstants.editFieldsHASHMAP.isEmpty()) {
-                            //  ((EditText) view).setText(OnGoConstants.editFieldsHASHMAP.get(tagName));
+                        if (!FormConstants.editFieldsHASHMAP.isEmpty()) {
+                            //  ((EditText) view).setText(FormConstants.editFieldsHASHMAP.get(tagName));
                             if (tagName.equalsIgnoreCase("Signature")) {
-                                if (OnGoConstants.editFieldsHASHMAP.containsKey("Signature")) {
-                                    // Utils.loadImage(mContext, OnGoConstants.editFieldsHASHMAP.get("Signature"), ((ImageView) view));
-                                    if (!TextUtils.isEmpty(OnGoConstants.editFieldsHASHMAP.get("Signature"))) {
-                                        Bitmap bitmap = BitmapFactory.decodeFile(OnGoConstants.editFieldsHASHMAP.get("Signature"));
+                                if (FormConstants.editFieldsHASHMAP.containsKey("Signature")) {
+                                    // FormUtils.loadImage(mContext, FormConstants.editFieldsHASHMAP.get("Signature"), ((ImageView) view));
+                                    if (!TextUtils.isEmpty(FormConstants.editFieldsHASHMAP.get("Signature"))) {
+                                        Bitmap bitmap = BitmapFactory.decodeFile(FormConstants.editFieldsHASHMAP.get("Signature"));
                                         ((ImageView) view).setImageBitmap(bitmap);
                                     }
                                 }
@@ -797,8 +742,8 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
             }
         }
         if (isSubmitClicked) {
-            if (!OnGoConstants.editFieldsHASHMAP.isEmpty())
-                hashMap.put("ItemCode", OnGoConstants.editFieldsHASHMAP.get("ItemCode"));
+            if (!FormConstants.editFieldsHASHMAP.isEmpty())
+                hashMap.put("ItemCode", FormConstants.editFieldsHASHMAP.get("ItemCode"));
             //Log.e("hashmap is", "<<<<<<<<<<<<" + hashMap.toString());
 
 //            hashMap.put("Price With Fuel", withFuel.getText().toString());
@@ -813,48 +758,8 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
 //        ((EditText)linearLayout.getChildAt(0).findViewWithTag("Name")).getText();
     }
 
-    private String getTagNameValue(String tagName) {
-        try {
-            JSONObject jsonObject = new JSONObject(itemJob);
-            String jsonObjKey = jsonObject.getString(tagName);
-            for (int j = 0; j < dependentDTOS.size(); j++) {
-                DependentDTO dependentDTO = dependentDTOS.get(j);
-                String dtoTagName = dependentDTO.getTagName();
-                if (tagName.equalsIgnoreCase(dtoTagName)) {
-                    ArrayList<String> keysList = dependentDTO.getKeyArray();
-                    for (int k = 0; k < keysList.size(); k++) {
-                        String kPositKey = keysList.get(k);
-                        String key;
-                        if (!kPositKey.contains("~")) {
-                            key = kPositKey;
-                        } else {
-                            key = (kPositKey.substring(kPositKey.lastIndexOf("~") + 1));
-                        }
-                        if (key.equalsIgnoreCase(jsonObjKey)) {
-                            ArrayList<String> valuesArray = dependentDTO.getValueArray();
-                            if (valuesArray != null && valuesArray.size() > 0) {
-                                String value = valuesArray.get(k);
-                                if (value.contains("~")) {
-                                    value = value.substring(value.lastIndexOf("~") + 1);
-                                }
-                                dependentDTO.setSelectedId(key);
-                                dependentDTOS.set(j, dependentDTO);
-                                return value;
-                            } else {
-                                return "";
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
     private void showSingleSelection(String tagName, final String[] strings, final TextView editText) {
-        AlertDialogsUtils.showCustomAlertDialog(mContext, R.layout.single_selection_list, true, new AlertDialogsUtils.CustomAlertInterface() {
+        FormAlertDialogsUtils.showCustomAlertDialog(mContext, R.layout.single_selection_list, true, new FormAlertDialogsUtils.CustomAlertInterface() {
             @Override
             public void setListenerCustomAlert(View alertView, final AlertDialog alertDialog) {
                 ListView view = alertView.findViewById(R.id.listView);
@@ -886,7 +791,7 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                 tempKeysArray.add(str);
             }
         }
-        AlertDialogsUtils.showCustomAlertDialog(mContext, R.layout.single_selection_list, true, new AlertDialogsUtils.CustomAlertInterface() {
+        FormAlertDialogsUtils.showCustomAlertDialog(mContext, R.layout.single_selection_list, true, new FormAlertDialogsUtils.CustomAlertInterface() {
             @Override
             public void setListenerCustomAlert(View alertView, final AlertDialog alertDialog) {
                 ListView view = alertView.findViewById(R.id.listView);
@@ -908,17 +813,14 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                             }
                         }
 //                        selectedKeyId = keysArray.get(position);
-                        for (int i = 0; i < dependentDTOS.size(); i++) {
-                            if (dependentDTOS.get(i).getTagName().equalsIgnoreCase(tagName)) {
-                                String dependentName = dependentDTOS.get(i).getDependentName();
-                                String tempStrId;
+                        for (int i = 0; i < formDependentDTOS.size(); i++) {
+                            if (formDependentDTOS.get(i).getTagName().equalsIgnoreCase(tagName)) {
                                 if (selectedKeyId.contains("~")) {
-                                    tempStrId = selectedKeyId.substring(selectedKeyId.indexOf("~") + 1, selectedKeyId.length());
+                                    String tempStrId = selectedKeyId.substring(selectedKeyId.indexOf("~") + 1, selectedKeyId.length());
+                                    formDependentDTOS.get(i).setSelectedId(tempStrId);
                                 } else {
-                                    tempStrId = selectedKeyId;
+                                    formDependentDTOS.get(i).setSelectedId(selectedKeyId);
                                 }
-                                removeDependents(tagName);
-                                dependentDTOS.get(i).setSelectedId(tempStrId);
                             }
                         }
                         editText.setText(tempKeysArray.get(position));
@@ -929,7 +831,6 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                         } else {
                             hashMap.put(tagName, selectedItemCode);
                         }
-                        removeDependencies(tagName);
                         alertDialog.dismiss();
                     }
                 });
@@ -938,87 +839,8 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
         });
     }
 
-
-    void removeDependencies(String mTagName) {
-        for (int i = 0; i < dependentDTOS.size(); i++) {
-            DependentDTO dependentDTO = dependentDTOS.get(i);
-            String tagName = dependentDTO.getTagName();
-            if (mTagName.equalsIgnoreCase(tagName)) {
-//                //remove selectedId
-//                dependentDTO.setSelectedId("");
-                String dependentName = dependentDTO.getDependentName();
-                if (!TextUtils.isEmpty(dependentName)) {
-                    for (int j = 0; j < linearLayout.getChildCount(); j++) {
-                        View view = linearLayout.getChildAt(j).findViewWithTag(dependentName);
-                        if (view instanceof TextView) {
-                            ((TextView) view).setText("");
-                            hashMap.put(dependentName, "");
-                            try {
-                                OnGoConstants.editFieldsHASHMAP.put(dependentName, "");
-                            } catch (Exception e) {
-                                Log.e("exp", e.toString());
-                            }
-                            String mandatory = getMandatory(mTagName);
-                            isManadatory.put(dependentName, mandatory);
-                            removeSelectedId(dependentName);
-                            removeDependencies(dependentName);
-                            break;
-                        }
-                    }
-                }
-            }
-
-        }
-    }
-
-
-    void removeSelectedId(String mDependentName) {
-        for (int i = 0; i < dependentDTOS.size(); i++) {
-            DependentDTO dependentDTO = dependentDTOS.get(i);
-            String tagName = dependentDTO.getTagName();
-            if (tagName.equalsIgnoreCase(mDependentName)) {
-                dependentDTO.setSelectedId("");
-                break;
-            }
-        }
-    }
-
-    String getMandatory(String mTagName) {
-        for (ServiceFieldsDto serviceFieldsDto : serviceFieldsDtos) {
-            String tagName = serviceFieldsDto.getName();
-            if (tagName.equalsIgnoreCase(mTagName)) {
-                return serviceFieldsDto.getMandatory();
-            }
-        }
-        return "false";
-    }
-
-    private void removeDependents(String tagName) {
-        for (int i = 0; i < dependentDTOS.size(); i++) {
-            DependentDTO dependentDTO = dependentDTOS.get(i);
-            if (dependentDTO.getTagName().equalsIgnoreCase(tagName)) {
-                String dependentName = dependentDTO.getDependentName();
-                dependentDTO.setSelectedId("");
-                dependentDTOS.set(i, dependentDTO);
-                removeDependentsValue(dependentName);
-            }
-        }
-    }
-
-    private void removeDependentsValue(String dependentName) {
-        for (int i = 0; i < dependentDTOS.size(); i++) {
-            DependentDTO dependentDTO = dependentDTOS.get(i);
-            if (dependentDTO.getTagName().equalsIgnoreCase(dependentName)) {
-                String tagName = dependentDTO.getTagName();
-                if (!TextUtils.isEmpty(tagName)) {
-                    removeDependents(tagName);
-                }
-            }
-        }
-    }
-
     private void showMultiSelection(String tagName, final String[] strings, final TextView editText, final MultiSelectInterface multiSelectInterface) {
-        AlertDialogsUtils.showCustomAlertDialog(mContext, R.layout.single_selection_list, true, new AlertDialogsUtils.CustomAlertInterface() {
+  /*      FormAlertDialogsUtils.showCustomAlertDialog(mContext, R.layout.single_selection_list, true, new FormAlertDialogsUtils.CustomAlertInterface() {
             @Override
             public void setListenerCustomAlert(View alertView, AlertDialog alertDialog) {
                 multiEditText = editText;
@@ -1030,14 +852,56 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
 //                lView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                 MultiSelectAdapter aa = new MultiSelectAdapter(mContext, strings, multiSelectInterface, rlOk, alertDialog);
                 lView.setAdapter(aa);
-//                lView.setOnItemClickListener(ServiceFormFragment.this);
                 alertDialog.show();
+//                lView.setOnItemClickListener(ServiceFormFragmentForm.this);
+
+            }
+        });*/
+
+        showMultiChoiceAlertDialog("Title", strings, editText);
+    }
+
+    private void showMultiChoiceAlertDialog(String type, final String[] stringArray, final TextView editText) {
+        selectedList = new ArrayList<>();
+        android.support.v7.app.AlertDialog.Builder dialog = new android.support.v7.app.AlertDialog.Builder(mContext);
+        dialog.setTitle(type);
+        dialog.setCancelable(true);
+        dialog.setMultiChoiceItems(stringArray, null,
+                new DialogInterface.OnMultiChoiceClickListener() {
+                    public void onClick(DialogInterface dialog, int item, boolean isChecked) {
+                        if (isChecked) {
+                            if (selectedList != null && !selectedList.contains(stringArray[item])) {
+                                selectedList.add(stringArray[item]);
+                            }
+                        } else {
+                            if (selectedList != null && selectedList.contains(stringArray[item])) {
+                                selectedList.remove(stringArray[item]);
+                            }
+                        }
+                    }
+                });
+        dialog.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (selectedList != null && selectedList.size() > 0) {
+                    StringBuilder builder = new StringBuilder();
+                    for (int j = 0; j < selectedList.size(); j++) {
+                        if (j == 0) {
+                            builder.append(selectedList.get(j));
+                        } else {
+                            builder.append(",");
+                            builder.append(selectedList.get(j));
+                        }
+                    }
+                    editText.setText(builder.toString());
+                }
             }
         });
+        dialog.show();
     }
 
     private void showCameraGalleryAlert(final String tagName, final TextView textView) {
-        AlertDialogsUtils.showAlertDialog(mContext, "Options", "Please select options for attachment.", "Camera", "Gallery", new AlertDialogsUtils.AlertDialogInterface() {
+        FormAlertDialogsUtils.showAlertDialog(mContext, "Options", "Please select options for attachment.", "Camera", "Gallery", new FormAlertDialogsUtils.AlertDialogInterface() {
             @Override
             public void positiveButton() {
                 cameraAccessTask(tagName, textView);
@@ -1061,7 +925,7 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
     private void pickCamera() {
 
         // camera select
-        new ImagePicker.Builder(getActivity()).mode(ImagePicker.Mode.CAMERA).allowMultipleImages(true).compressLevel(ImagePicker.ComperesLevel.MEDIUM).directory(ImagePicker.Directory.DEFAULT).extension(ImagePicker.Extension.PNG).scale(600, 600).allowMultipleImages(true).enableDebuggingMode(true).build();
+        new ImagePicker.Builder(ServiceFormActivityForm.this).mode(ImagePicker.Mode.CAMERA).allowMultipleImages(true).compressLevel(ImagePicker.ComperesLevel.MEDIUM).directory(ImagePicker.Directory.DEFAULT).extension(ImagePicker.Extension.PNG).scale(600, 600).allowMultipleImages(true).enableDebuggingMode(true).build();
 
     }
 
@@ -1088,27 +952,27 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQ_LOCATION_CODE) {
             if (grantResults[0] == -1 && grantResults[1] == -1) {
-                AlertDialogsUtils.showAlertDialog(mContext, "Alert", "You can't set location without permissions.", "Continue", "Try Again", new AlertDialogsUtils.AlertDialogInterface() {
+                FormAlertDialogsUtils.showAlertDialog(mContext, "Alert", "You can't set location without permissions.", "Continue", "Try Again", new FormAlertDialogsUtils.AlertDialogInterface() {
                     @Override
                     public void positiveButton() {
                     }
 
                     @Override
                     public void negativeButton() {
-                        EasyPermissions.requestPermissions(ServiceFormFragment.this, "This app needs Location permission for address.", REQ_LOCATION_CODE, stringPerms);
+                        EasyPermissions.requestPermissions(ServiceFormActivityForm.this, "This app needs Location permission for address.", REQ_LOCATION_CODE, stringPerms);
                     }
                 });
             }
         } else if (requestCode == REQ_CAMERA_CODE) {
             if (grantResults[0] == -1 || grantResults[1] == -1 || grantResults[2] == -1) {
-                AlertDialogsUtils.showAlertDialog(mContext, "Alert", "You can't use Camera without permissions.", "Continue", "Try Again", new AlertDialogsUtils.AlertDialogInterface() {
+                FormAlertDialogsUtils.showAlertDialog(mContext, "Alert", "You can't use Camera without permissions.", "Continue", "Try Again", new FormAlertDialogsUtils.AlertDialogInterface() {
                     @Override
                     public void positiveButton() {
                     }
 
                     @Override
                     public void negativeButton() {
-                        EasyPermissions.requestPermissions(ServiceFormFragment.this, "This app needs Location permission for address.", REQ_LOCATION_CODE, stringPerms);
+                        EasyPermissions.requestPermissions(ServiceFormActivityForm.this, "This app needs Location permission for address.", REQ_LOCATION_CODE, stringPerms);
                     }
                 });
             } else {
@@ -1141,9 +1005,13 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        serviceFormPresenter.onActivityResult(requestCode, resultCode, data, new ServiceFormActivity.ListenerInterface() {
+        serviceFormPresenter.onActivityResult(requestCode, resultCode, data, new ListenerInterface() {
             @Override
             public void onImageSelected(int requestCode, String fileName) {
+                //single selection type for Gallery and Camera
+                if (requestCode == REQUEST_FILE_SELECT || requestCode == ImagePicker.IMAGE_PICKER_REQUEST_CODE) {
+                    mAttachment_name_tv.setText(fileName);
+                }
             }
         });
     }
@@ -1166,7 +1034,7 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
                 public void onClick(View v) {
                     String selectedName = "";
                     for (int i = 0; i < listNames.size(); i++) {
-                        selectedName = selectedName + listNames.get(i) + ",";
+                        selectedName = selectedName + FormUtils.removeBracket(listNames.get(i)) + ",";
                     }
                     selectedName = selectedName.substring(0, selectedName.length() - 1);
                     multiSelectInterface.multiSelectListener(selectedName);
@@ -1193,7 +1061,7 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
             convertView = mInflater.inflate(R.layout.multi_selection_list, parent, false);
-            String itemName = stringsList[position];
+            String itemName = FormUtils.removeBracket(stringsList[position]);
             TextView tv_item_name = convertView.findViewById(R.id.tv_item_name);
             CheckBox checkbox = convertView.findViewById(R.id.checkbox);
             tv_item_name.setText(itemName);
@@ -1216,6 +1084,10 @@ public class ServiceFormFragment extends BaseFragment implements ServiceFormPres
 
             return convertView;
         }
+    }
+
+    interface ListenerInterface {
+        void onImageSelected(int requestCode, String fileName);
     }
 
 

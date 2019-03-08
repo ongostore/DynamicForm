@@ -8,10 +8,10 @@ import android.content.Context;
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.RequestParams;
-import com.ongo.dynamicformlibrary.asynctasks.WebServices;
-import com.ongo.dynamicformlibrary.form_utils.MyMap;
-import com.ongo.dynamicformlibrary.form_utils.ServiceFieldsDto;
-import com.ongo.dynamicformlibrary.utils.Utils;
+import com.ongo.dynamicformlibrary.asynctasks.FormWebServices;
+import com.ongo.dynamicformlibrary.form_utils.FormMyMap;
+import com.ongo.dynamicformlibrary.form_utils.FormServiceFieldsDto;
+import com.ongo.dynamicformlibrary.utils.FormUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,7 +24,7 @@ import java.util.Iterator;
 
 class ServiceFormDataSource {
 
-    private ArrayList<ServiceFieldsDto> serviceFieldsDtos;
+    private ArrayList<FormServiceFieldsDto> formServiceFieldsDtos;
     private Context mContext;
     private SaleRegisterDataSourceListener sourceListener;
 
@@ -34,13 +34,13 @@ class ServiceFormDataSource {
     }
 
     void getServiceFields(String baseUrl, String postType, String mallId) {
-        WebServices ws = new WebServices(mContext);
-        String url = /*Utils.getBaseUrl(mContext)*/ baseUrl+ "/Services/getMasters";
+        FormWebServices ws = new FormWebServices(mContext);
+        String url = /*FormUtils.getBaseUrl(mContext)*/ baseUrl+ "/Services/getMasters";
         RequestParams params = new RequestParams();
         params.put("type", "allJobTypes|"+postType);
-        params.put("mallId", mallId); //Utils.getMallId(mContext));
+        params.put("mallId", mallId); //FormUtils.getMallId(mContext));
         params.put("dt", "CAMPAIGNS");
-        ws.invokeWebService(params, url, true, new WebServices.WSResponse() {
+        ws.invokeWebService(params, url, true, new FormWebServices.WSResponse() {
             @Override
             public void onResponse(boolean success, String response) {
                 if (success) {
@@ -49,34 +49,34 @@ class ServiceFormDataSource {
                             JSONObject jObj = new JSONObject(response);
                             JSONArray jArray = jObj.getJSONArray("orgs");
                             if (jArray.length() > 0) {
-                                serviceFieldsDtos = new ArrayList<>();
+                                formServiceFieldsDtos = new ArrayList<>();
 
                                 JSONObject jInner = jArray.getJSONObject(0);
                                 JSONArray jFiledsArray = jInner.getJSONArray("Fields");
 
                                 if (jFiledsArray.length() > 0) {
                                     for (int i = 0; i < jFiledsArray.length(); i++) {
-                                        ServiceFieldsDto serviceFieldsDto = new ServiceFieldsDto();
+                                        FormServiceFieldsDto formServiceFieldsDto = new FormServiceFieldsDto();
 
                                         if (jInner.has("type")) {
-                                            serviceFieldsDto.setServiceType(jInner.getString("type"));
+                                            formServiceFieldsDto.setServiceType(jInner.getString("type"));
                                         }
 
                                         JSONObject jInnerFields = jFiledsArray.getJSONObject(i);
                                         if (jInnerFields.has("name")) {
-                                            serviceFieldsDto.setName(jInnerFields.getString("name"));
+                                            formServiceFieldsDto.setName(jInnerFields.getString("name"));
                                         }
                                         if (jInnerFields.has("addMore")) {
-                                            serviceFieldsDto.setAddMore(String.valueOf(jInnerFields.getBoolean("addMore")));
+                                            formServiceFieldsDto.setAddMore(String.valueOf(jInnerFields.getBoolean("addMore")));
                                         }
                                         if (jInnerFields.has("type")) {
-                                            serviceFieldsDto.setType(jInnerFields.getString("type"));
+                                            formServiceFieldsDto.setType(jInnerFields.getString("type"));
                                         }
                                         if (jInnerFields.has("mandatory")) {
-                                            serviceFieldsDto.setMandatory(jInnerFields.getString("mandatory"));
+                                            formServiceFieldsDto.setMandatory(jInnerFields.getString("mandatory"));
                                         }
                                         if (jInnerFields.has("allowedValues")) {
-                                            serviceFieldsDto.setAllowedValues(jInnerFields.getString("allowedValues"));
+                                            formServiceFieldsDto.setAllowedValues(jInnerFields.getString("allowedValues"));
                                         }
                                         if (jInnerFields.has("allowedValuesResults")) {
 
@@ -85,32 +85,32 @@ class ServiceFormDataSource {
                                             Type typeOfObjectsListNew = new TypeToken<HashMap<String, String>>() {
                                             }.getType();
 
-                                            ArrayList<MyMap> arry = new ArrayList<>();
-                                            MyMap map = new MyMap();
+                                            ArrayList<FormMyMap> arry = new ArrayList<>();
+                                            FormMyMap map = new FormMyMap();
                                             map.setKey(jAllowedResults.toString());
                                             map.setValue(typeOfObjectsListNew.toString());
                                             arry.add(map);
 
-                                            serviceFieldsDto.setAllowedValuesResults(arry);
+                                            formServiceFieldsDto.setAllowedValuesResults(arry);
                                         }
                                         if (jInnerFields.has("multiselect")) {
-                                            serviceFieldsDto.setMultiselect(jInnerFields.getString("multiselect"));
+                                            formServiceFieldsDto.setMultiselect(jInnerFields.getString("multiselect"));
                                         }
                                         if (jInnerFields.has("groupName")) {
-                                            serviceFieldsDto.setGroupName(jInnerFields.getString("groupName"));
+                                            formServiceFieldsDto.setGroupName(jInnerFields.getString("groupName"));
                                         }
                                         if (jInnerFields.has("dependentFields")) {
-                                            serviceFieldsDto.setDependentFields(jInnerFields.getString("dependentFields"));
+                                            formServiceFieldsDto.setDependentFields(jInnerFields.getString("dependentFields"));
                                         }
                                         if (jInnerFields.has("propgateValueToSubFormFields")) {
-                                            serviceFieldsDto.setPropgateValueToSubFormFields(jInnerFields.getString("propgateValueToSubFormFields"));
+                                            formServiceFieldsDto.setPropgateValueToSubFormFields(jInnerFields.getString("propgateValueToSubFormFields"));
                                         }
                                         if (jInnerFields.has("allowedValuesResults")) {
                                             JSONObject jsonObject = jInnerFields.getJSONObject("allowedValuesResults");
                                             Iterator<?> keys = jsonObject.keys();
-                                            ArrayList<MyMap> arry = new ArrayList<>();
+                                            ArrayList<FormMyMap> arry = new ArrayList<>();
                                             while (keys.hasNext()) {
-                                                MyMap map = new MyMap();
+                                                FormMyMap map = new FormMyMap();
                                                 String key = (String) keys.next();
                                                 map.setKey(key);
                                                 if (jsonObject.get(key) instanceof String) {
@@ -119,16 +119,16 @@ class ServiceFormDataSource {
                                                     arry.add(map);
                                                 }
                                             }
-                                            serviceFieldsDto.setAllowedValuesResults(arry);
+                                            formServiceFieldsDto.setAllowedValuesResults(arry);
                                         }
-                                        serviceFieldsDtos.add(serviceFieldsDto);
+                                        formServiceFieldsDtos.add(formServiceFieldsDto);
                                     }
-                                    sourceListener.onResponse(serviceFieldsDtos);
+                                    sourceListener.onResponse(formServiceFieldsDtos);
                                 } else {
-                                    Utils.toast("No Form", mContext);
+                                    FormUtils.toast("No Form", mContext);
                                 }
                             } else {
-                                Utils.toast("No Form", mContext);
+                                FormUtils.toast("No Form", mContext);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -140,7 +140,7 @@ class ServiceFormDataSource {
     }
 
     interface SaleRegisterDataSourceListener {
-        void onResponse(ArrayList<ServiceFieldsDto> serviceFieldsDtos);
+        void onResponse(ArrayList<FormServiceFieldsDto> formServiceFieldsDtos);
     }
 
 }

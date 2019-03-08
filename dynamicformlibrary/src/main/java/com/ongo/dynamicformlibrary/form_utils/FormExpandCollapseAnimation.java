@@ -11,12 +11,12 @@ import android.widget.LinearLayout;
  * Created by gufran khan on 17-05-2018.
  */
 
-public class ExpandCollapseAnimation extends Animation {
+public class FormExpandCollapseAnimation extends Animation {
     private View mAnimatedView;
     private int mEndHeight;
     private int mType;
 
-    public ExpandCollapseAnimation(View view, int duration, int type, Activity activity) {
+    public FormExpandCollapseAnimation(View view, int duration, int type, Activity activity) {
         setDuration(duration);
         mAnimatedView = view;
 

@@ -15,15 +15,15 @@ import java.util.Arrays;
 import cc.cloudist.acplibrary.ACProgressConstant;
 import cc.cloudist.acplibrary.ACProgressFlower;
 
-public class WebServices extends Activity {
+public class FormWebServices extends Activity {
     private ACProgressFlower dialog;
     private Context context;
 
-    public WebServices(Context c) {
+    public FormWebServices(Context c) {
         this.context = c;
     }
 
-    public WebServices() {
+    public FormWebServices() {
     }
 
     /**

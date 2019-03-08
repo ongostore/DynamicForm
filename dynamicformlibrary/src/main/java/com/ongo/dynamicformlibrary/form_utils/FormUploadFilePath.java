@@ -17,9 +17,9 @@ import java.io.File;
  * Created by SONY on 7/19/2017.
  */
 
-public class UploadFilePath {
+public class FormUploadFilePath {
     protected Context ctx;
-    public UploadFilePath(Context ctx){
+    public FormUploadFilePath(Context ctx){
         this.ctx = ctx.getApplicationContext();
     }
     /**

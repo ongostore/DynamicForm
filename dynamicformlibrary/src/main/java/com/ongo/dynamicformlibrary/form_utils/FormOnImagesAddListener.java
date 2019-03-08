@@ -7,6 +7,6 @@ import android.widget.ImageView;
  * Created by gufran khan on 21-05-2018.
  */
 
-public interface OnImagesAddListener {
+public interface FormOnImagesAddListener {
     void onImagesAdded(RecyclerView recyclerView, ImageView imageView);
 }

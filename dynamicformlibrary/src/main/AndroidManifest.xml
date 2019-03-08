@@ -19,7 +19,7 @@
     <application>
 
         <activity
-            android:name=".ServiceFormActivity"
+            android:name=".ServiceFormActivityForm"
             android:configChanges="orientation|screenSize" />
 
     </application>

@@ -23,7 +23,7 @@ import okhttp3.Response;
  * Created by kushal on 26/9/17.
  */
 
-public class APICall extends AsyncTask<Void, Void, Void> {
+public class FormAPICall extends AsyncTask<Void, Void, Void> {
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static String result;
@@ -42,58 +42,58 @@ public class APICall extends AsyncTask<Void, Void, Void> {
     private boolean showProgress;
 
     // basic method for call back
-    public APICall(String json, String url, Object object) {
+    public FormAPICall(String json, String url, Object object) {
         this.json = json;
         this.url = url;
         this.object = object;
         apiResponse = (APIResponse) object;
         mContext = (Context) object;
-        //credential = Credentials.basic(OnGoConstants.AUTH_USERNAME, OnGoConstants.AUTH_PASSWORD);
+        //credential = Credentials.basic(FormConstants.AUTH_USERNAME, FormConstants.AUTH_PASSWORD);
     }
 
     // for multi part upload
-    public APICall(String url, HashMap<String, File> hashMapFiles
+    public FormAPICall(String url, HashMap<String, File> hashMapFiles
             , HashMap<String, String> hashMapJson, Object object) {
 
         this.url = url;
         this.object = object;
         apiResponse = (APIResponse) object;
         mContext = (Context) object;
-        //credential = Credentials.basic(OnGoConstants.AUTH_USERNAME, OnGoConstants.AUTH_PASSWORD);
+        //credential = Credentials.basic(FormConstants.AUTH_USERNAME, FormConstants.AUTH_PASSWORD);
         this.hashMapJson = hashMapJson;
         this.hashMapFiles = hashMapFiles;
     }
 
     // to be used in frag
-    public APICall(String json, String url, Object object, Context mContext) {
+    public FormAPICall(String json, String url, Object object, Context mContext) {
         this.json = json;
         this.url = url;
         this.object = object;
         apiResponse = (APIResponse) object;
         this.mContext = mContext;
-        //credential = Credentials.basic(OnGoConstants.AUTH_USERNAME, OnGoConstants.AUTH_PASSWORD);
+        //credential = Credentials.basic(FormConstants.AUTH_USERNAME, FormConstants.AUTH_PASSWORD);
     }
 
 
     // to be used in adapter or getting response in self listener
-    public APICall(String json, String url, Context mContext, boolean showProgress, APIResponse apiResponse) {
+    public FormAPICall(String json, String url, Context mContext, boolean showProgress, APIResponse apiResponse) {
         this.json = json;
         this.url = url;
         this.mContext = mContext;
         this.showProgress = showProgress;
-        //credential = Credentials.basic(OnGoConstants.AUTH_USERNAME, OnGoConstants.AUTH_PASSWORD);
+        //credential = Credentials.basic(FormConstants.AUTH_USERNAME, FormConstants.AUTH_PASSWORD);
         this.apiResponse = apiResponse;
-        Log.e("APICall url here is", ">>>>>" + url);
+        Log.e("FormAPICall url here is", ">>>>>" + url);
     }
 
-    public APICall(String url, HashMap<String, File> hashMapFiles
+    public FormAPICall(String url, HashMap<String, File> hashMapFiles
             , HashMap<String, String> hashMapJson, Object object, APIResponse apiResponse) {
 
         this.url = url;
         this.object = object;
         this.apiResponse = apiResponse;
         mContext = (Context) object;
-        //credential = Credentials.basic(OnGoConstants.AUTH_USERNAME, OnGoConstants.AUTH_PASSWORD);
+        //credential = Credentials.basic(FormConstants.AUTH_USERNAME, FormConstants.AUTH_PASSWORD);
         this.hashMapJson = hashMapJson;
         this.hashMapFiles = hashMapFiles;
     }

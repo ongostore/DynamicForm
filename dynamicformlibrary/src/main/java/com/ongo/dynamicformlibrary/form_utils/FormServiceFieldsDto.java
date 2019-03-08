@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by yasaswy on 03-01-2018.
  */
 
-public class ServiceFieldsDto {
+public class FormServiceFieldsDto {
 
     public String name;
     public String type;
@@ -21,7 +21,7 @@ public class ServiceFieldsDto {
     private String mask;
     private String incrementalSearch;
     private String serviceType;
-    private ArrayList<MyMap> allowedValuesResults;
+    private ArrayList<FormMyMap> allowedValuesResults;
 
     public String getServiceType() {
         return serviceType;
@@ -127,11 +127,11 @@ public class ServiceFieldsDto {
         this.incrementalSearch = incrementalSearch;
     }
 
-    public ArrayList<MyMap> getAllowedValuesResults() {
+    public ArrayList<FormMyMap> getAllowedValuesResults() {
         return allowedValuesResults;
     }
 
-    public void setAllowedValuesResults(ArrayList<MyMap> allowedValuesResults) {
+    public void setAllowedValuesResults(ArrayList<FormMyMap> allowedValuesResults) {
         this.allowedValuesResults = allowedValuesResults;
     }
 }

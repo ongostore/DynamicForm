@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class DependentDTO {
+public class FormDependentDTO {
     String tagName;
     String dependentName;
     String selectedId;

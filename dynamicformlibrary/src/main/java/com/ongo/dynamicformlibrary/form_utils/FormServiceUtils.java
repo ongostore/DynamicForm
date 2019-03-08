@@ -42,7 +42,7 @@ import java.util.Locale;
  * Created by Admin on 03-01-2018.
  */
 
-public class ServiceUtils {
+public class FormServiceUtils {
 
     /**
      * author Md Adil
@@ -148,8 +148,8 @@ public class ServiceUtils {
         Calendar mcurrentTime = Calendar.getInstance();
         hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
         minute = mcurrentTime.get(Calendar.MINUTE);
-        RangeTimePickerDialog mTimePicker;
-        mTimePicker = new RangeTimePickerDialog(mContext, new TimePickerDialog.OnTimeSetListener() {
+        FormRangeTimePickerDialog mTimePicker;
+        mTimePicker = new FormRangeTimePickerDialog(mContext, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                 Calendar calendar = Calendar.getInstance();
@@ -174,8 +174,8 @@ public class ServiceUtils {
         Calendar mcurrentTime = Calendar.getInstance();
         hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
         minute = mcurrentTime.get(Calendar.MINUTE);
-        RangeTimePickerDialog mTimePicker;
-        mTimePicker = new RangeTimePickerDialog(mContext, new TimePickerDialog.OnTimeSetListener() {
+        FormRangeTimePickerDialog mTimePicker;
+        mTimePicker = new FormRangeTimePickerDialog(mContext, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                 Calendar calendar = Calendar.getInstance();
@@ -370,7 +370,7 @@ public class ServiceUtils {
         add_photos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((OnImagesAddListener) context).onImagesAdded(recycler_view, add_photos);
+                ((FormOnImagesAddListener) context).onImagesAdded(recycler_view, add_photos);
             }
         });
 
@@ -383,19 +383,19 @@ public class ServiceUtils {
                     Activity activity = (Activity) context;
 
                     if (view.getVisibility() == View.GONE) {
-                        ExpandCollapseAnimation animation = new ExpandCollapseAnimation(view, 500, 0, activity);
+                        FormExpandCollapseAnimation animation = new FormExpandCollapseAnimation(view, 500, 0, activity);
                         view.startAnimation(animation);
                     }
                 /*    if (radioButton.getText().toString().equalsIgnoreCase("Yes")) {
                         if (checked) {
                             if (view.getVisibility() == View.GONE) {
-                                ExpandCollapseAnimation animation = new ExpandCollapseAnimation(view, 500, 0, activity);
+                                FormExpandCollapseAnimation animation = new FormExpandCollapseAnimation(view, 500, 0, activity);
                                 view.startAnimation(animation);
                             }
                         }
                     } else {
                         if (checked) {
-                            ExpandCollapseAnimation animation = new ExpandCollapseAnimation(view, 500, 1, activity);
+                            FormExpandCollapseAnimation animation = new FormExpandCollapseAnimation(view, 500, 1, activity);
                             view.startAnimation(animation);
                         }
                     }*/

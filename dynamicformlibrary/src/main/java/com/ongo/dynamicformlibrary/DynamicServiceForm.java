@@ -11,7 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 
-import com.ongo.dynamicformlibrary.utils.OnGoConstants;
+import com.ongo.dynamicformlibrary.utils.FormConstants;
 
 public class DynamicServiceForm {
 
@@ -30,9 +30,9 @@ public class DynamicServiceForm {
         this.activity = activity;
         this.contentFrame = contentFrame;
         this.dynamicServiceFormListener = dynamicServiceFormListener;
-        OnGoConstants.setHostUrl(baseUrl);
-        OnGoConstants.setConsumerEmail(consumerEmail);
-        OnGoConstants.setMallId(mallId);
+        FormConstants.setHostUrl(baseUrl);
+        FormConstants.setConsumerEmail(consumerEmail);
+        FormConstants.setMallId(mallId);
     }
 
     /**
@@ -71,11 +71,11 @@ public class DynamicServiceForm {
      *                   after getting form by using post. setting the view.
      */
     private void createFragment(String postType, String itemJobObj) {
-        ServiceFormFragment serviceFormFragment = new ServiceFormFragment(dynamicServiceFormListener);
+        ServiceFormFragmentForm serviceFormFragment = new ServiceFormFragmentForm(dynamicServiceFormListener);
         Bundle bundle = new Bundle();
-        bundle.putString(OnGoConstants.postType, postType);
+        bundle.putString(FormConstants.postType, postType);
         if (!TextUtils.isEmpty(itemJobObj)) {
-            bundle.putString(OnGoConstants.jobObj, itemJobObj);
+            bundle.putString(FormConstants.jobObj, itemJobObj);
         }
         serviceFormFragment.setArguments(bundle);
         boolean isInit =false;

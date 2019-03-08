@@ -11,7 +11,7 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
  * Created by gufran khan on 30-10-2018.
  */
 
-public class AlertDialogsUtils {
+public class FormAlertDialogsUtils {
 
     /**
      * @param mContext      Context

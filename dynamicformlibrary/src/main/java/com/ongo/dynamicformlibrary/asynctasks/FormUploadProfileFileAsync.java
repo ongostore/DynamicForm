@@ -10,7 +10,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 
-import com.ongo.dynamicformlibrary.utils.OnGoConstants;
+import com.ongo.dynamicformlibrary.utils.FormConstants;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -29,7 +29,7 @@ import java.io.File;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class UploadProfileFileAsync extends AsyncTask<Void, Void, Void> {
+public class FormUploadProfileFileAsync extends AsyncTask<Void, Void, Void> {
 
 		private HttpResponse response;
 		private String imagePathsHashMap;
@@ -47,7 +47,7 @@ public class UploadProfileFileAsync extends AsyncTask<Void, Void, Void> {
 			void isProfileFileUploaded(String imagUrl);
 		}
 		
-		public UploadProfileFileAsync(ProfileImageUploaded profileImageUploaded, String imagePaths, String serverFileName, Context mContext) {
+		public FormUploadProfileFileAsync(ProfileImageUploaded profileImageUploaded, String imagePaths, String serverFileName, Context mContext) {
 			this.mContext = mContext;
 			this.imagePathsHashMap = imagePaths;
 			this.serverFileName=serverFileName;
@@ -86,7 +86,7 @@ public class UploadProfileFileAsync extends AsyncTask<Void, Void, Void> {
 			try {
 				HttpClient httpClient = new DefaultHttpClient();
 				HttpContext localContext = new BasicHttpContext();
-				HttpPost httpPost = new HttpPost(OnGoConstants.uploadFile());
+				HttpPost httpPost = new HttpPost(FormConstants.uploadFile());
 				FileBody fileBody = new FileBody(new File(imagePathsHashMap));
 				
 				MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
@@ -106,7 +106,7 @@ public class UploadProfileFileAsync extends AsyncTask<Void, Void, Void> {
 			String status= null;
 			 
 			try {
-				Log.e(UploadProfileFileAsync.class.getSimpleName(), "JSON" + jsonRes);
+				Log.e(FormUploadProfileFileAsync.class.getSimpleName(), "JSON" + jsonRes);
 				outerJson = new JSONObject(jsonRes);
 				if (outerJson.has("status")) {
 					status = outerJson.getString("status");
@@ -128,9 +128,9 @@ public class UploadProfileFileAsync extends AsyncTask<Void, Void, Void> {
 				mProgressDialog.dismiss();
 				try {
 				imageUploaded.isProfileFileUploaded(responseString);
-					mPreferences = mContext.getSharedPreferences(OnGoConstants.PREF_NAME, MODE_PRIVATE);
+					mPreferences = mContext.getSharedPreferences(FormConstants.PREF_NAME, MODE_PRIVATE);
 					mPrefEditor = mPreferences.edit();
-					mPrefEditor.putString(OnGoConstants.PREF_PROFILE_IMAGE, responseString);
+					mPrefEditor.putString(FormConstants.PREF_PROFILE_IMAGE, responseString);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

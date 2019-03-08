@@ -13,7 +13,7 @@ import java.util.Calendar;
  * Created by Admin on 14-11-2017.
  */
 
-public class RangeTimePickerDialog extends TimePickerDialog {
+public class FormRangeTimePickerDialog extends TimePickerDialog {
 
     private int minHour = -1;
     private int minMinute = -1;
@@ -28,7 +28,7 @@ public class RangeTimePickerDialog extends TimePickerDialog {
     private DateFormat dateFormat;
 
 
-    public RangeTimePickerDialog(Context context, OnTimeSetListener callBack, int hourOfDay, int minute, boolean is24HourView) {
+    public FormRangeTimePickerDialog(Context context, OnTimeSetListener callBack, int hourOfDay, int minute, boolean is24HourView) {
         super(context,callBack, hourOfDay, minute, is24HourView);
         currentHour = hourOfDay;
         currentMinute = minute;
@@ -59,7 +59,7 @@ public class RangeTimePickerDialog extends TimePickerDialog {
     @Override
     public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
 
-        Log.d("RangeTimePickerDialog", "onTimeChanged");
+        Log.d("FormRangeTimePickerDialog", "onTimeChanged");
 
         boolean validTime = true;
         if (hourOfDay < minHour || (hourOfDay == minHour && minute < minMinute)) {

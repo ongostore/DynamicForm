@@ -15,13 +15,12 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Spinner;
 
-import com.ongo.dynamicformlibrary.asynctasks.APICall;
-import com.ongo.dynamicformlibrary.form_utils.DependentDTO;
-import com.ongo.dynamicformlibrary.form_utils.ServiceFieldsDto;
-import com.ongo.dynamicformlibrary.form_utils.UploadFilePath;
-import com.ongo.dynamicformlibrary.utils.OnGoConstants;
-import com.ongo.dynamicformlibrary.utils.SharedPref;
-import com.ongo.dynamicformlibrary.utils.Utils;
+import com.ongo.dynamicformlibrary.asynctasks.FormAPICall;
+import com.ongo.dynamicformlibrary.form_utils.FormDependentDTO;
+import com.ongo.dynamicformlibrary.form_utils.FormServiceFieldsDto;
+import com.ongo.dynamicformlibrary.form_utils.FormUploadFilePath;
+import com.ongo.dynamicformlibrary.utils.FormUtils;
+import com.ongo.dynamicformlibrary.utils.FormConstants;
 
 import net.alhazmy13.mediapicker.Image.ImagePicker;
 
@@ -36,7 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
-import static com.ongo.dynamicformlibrary.ServiceFormActivity.REQUEST_FILE_SELECT;
+import static com.ongo.dynamicformlibrary.ServiceFormActivityForm.REQUEST_FILE_SELECT;
 
 
 class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSourceListener {
@@ -47,6 +46,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
     private Context mContext;
     private ServiceFormListener saleRegisterListener;
     private Fragment fragment;
+    private ArrayList<String> photosArray;
 
     ServiceFormPresenter(Fragment fragment, ServiceFormListener saleRegisterListener) {
         this.fragment = fragment;
@@ -98,7 +98,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
         }
     }
 
-    void onActivityResult(int requestCode, int resultCode, Intent data, ServiceFormActivity.ListenerInterface listenerInterface) {
+    void onActivityResult(int requestCode, int resultCode, Intent data, ServiceFormActivityForm.ListenerInterface listenerInterface) {
         if (requestCode == REQUEST_IMAGE && data != null) {
          /*   ArrayList<String> imagesList = data.getStringArrayListExtra(MultiImageSelector.EXTRA_RESULT);
             if (imagesList != null && imagesList.size() > 0) {
@@ -113,7 +113,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
                                     for (int i = 0; i < compressedImages.size(); i++) {
 //                    Uri uri = imagesList.get(i);
                                         // To get selected path...
-//                    UploadFilePath filePathClass = new UploadFilePath(mContext);
+//                    FormUploadFilePath filePathClass = new FormUploadFilePath(mContext);
                                         String path = compressedImages.get(i);
                                         File file = new File(path);
                                         String filename = path.substring(path.lastIndexOf("/") + 1);
@@ -123,18 +123,18 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-//                                OnGoConstants.mSelectedImagesList = compressedImages;
-//                                SharedPref.writeArry(OnGoConstants.PREF_PHOTO_ARRY, compressedImages);
+//                                FormConstants.mSelectedImagesList = compressedImages;
+//                                FormSharedPref.writeArry(FormConstants.PREF_PHOTO_ARRY, compressedImages);
 //
-//                                if (OnGoConstants.mSelectedImagesList != null && OnGoConstants.mSelectedImagesList.size() > 0) {
+//                                if (FormConstants.mSelectedImagesList != null && FormConstants.mSelectedImagesList.size() > 0) {
 //                                    isFtromAddPhotos = true;
 //                                    Intent intent = new Intent(StatusImageDialogActivity.this, EditImageActivity.class);
-//                                    intent.putExtra("PhotoUrlsList", OnGoConstants.mSelectedImagesList);
-//                                    intent.putExtra("UserName", SharedPref.read(OnGoConstants.Name, ""));
+//                                    intent.putExtra("PhotoUrlsList", FormConstants.mSelectedImagesList);
+//                                    intent.putExtra("UserName", FormSharedPref.read(FormConstants.Name, ""));
 //                                    intent.putExtra("Status", et_status_assignee.getText().toString());
 //                                    startActivityForResult(intent, 1111);
 //
-//                                    Log.e("images", ">>>>>>>>>>" + OnGoConstants.mSelectedImagesList.toString());
+//                                    Log.e("images", ">>>>>>>>>>" + FormConstants.mSelectedImagesList.toString());
 //
 //                                } else {
 //                                    Log.e("no images", ">>>>>>>>>>");
@@ -150,11 +150,11 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
             try {
 //                //String photo = data.getStringExtra("Photo");
 //                ArrayList<String> editedImagesList = data.getStringArrayListExtra("EditedPhotosList");
-//                OnGoConstants.mSelectedImagesList.clear();
+//                FormConstants.mSelectedImagesList.clear();
 //                if (editedImagesList != null && editedImagesList.size() > 0) {
 //                    if (isFtromAddPhotos) {
 //                        if (imageSelectedCount <= 1) {
-//                            OnGoConstants.mSelectedImagesList = editedImagesList;
+//                            FormConstants.mSelectedImagesList = editedImagesList;
 //                        } else {
 //                            ArrayList<String> existingImages = new ArrayList<>();
 //                            if (horizontalAdapter != null && horizontalAdapter.getAllImages() != null
@@ -167,26 +167,26 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
 //                                        existingImages.add(editedUrls);
 //                                    }
 //                                }
-//                                OnGoConstants.mSelectedImagesList = existingImages;
+//                                FormConstants.mSelectedImagesList = existingImages;
 //                            } else {
-//                                OnGoConstants.mSelectedImagesList = editedImagesList;
+//                                FormConstants.mSelectedImagesList = editedImagesList;
 //                            }
 //                        }
 //                    } else {
-//                        OnGoConstants.mSelectedImagesList = editedImagesList;
+//                        FormConstants.mSelectedImagesList = editedImagesList;
 //                    }
 //                }
 //                // imagesList.set(currentPhotoPosition, photo);
-//                if (OnGoConstants.mSelectedImagesList != null && OnGoConstants.mSelectedImagesList.size() > 0) {
-//                    //OnGoConstants.mSelectedImagesList.set(currentPhotoPosition, photo);
-//                    SharedPref.writeArry(OnGoConstants.PREF_PHOTO_ARRY, OnGoConstants.mSelectedImagesList);
+//                if (FormConstants.mSelectedImagesList != null && FormConstants.mSelectedImagesList.size() > 0) {
+//                    //FormConstants.mSelectedImagesList.set(currentPhotoPosition, photo);
+//                    FormSharedPref.writeArry(FormConstants.PREF_PHOTO_ARRY, FormConstants.mSelectedImagesList);
 //
-//                    if (OnGoConstants.mSelectedImagesList != null && OnGoConstants.mSelectedImagesList.size() > 0) {
+//                    if (FormConstants.mSelectedImagesList != null && FormConstants.mSelectedImagesList.size() > 0) {
 //                        isImagesAdded = true;
 //                        recycler_view.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-//                        horizontalAdapter = new PhotoUploadAdapter(OnGoConstants.mSelectedImagesList, mContext);
+//                        horizontalAdapter = new PhotoUploadAdapter(FormConstants.mSelectedImagesList, mContext);
 //                        recycler_view.setAdapter(horizontalAdapter);
-//                        Log.e("images", ">>>>>>>>>>" + OnGoConstants.mSelectedImagesList.toString());
+//                        Log.e("images", ">>>>>>>>>>" + FormConstants.mSelectedImagesList.toString());
 //                    } else {
 //                        isImagesAdded = false;
                 Log.e("no images", ">>>>>>>>>>");
@@ -218,7 +218,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
         } else if (requestCode == REQUEST_FILE_SELECT && data != null) {
             Uri uri = data.getData();
             // To get selected path...
-            UploadFilePath filePathClass = new UploadFilePath(mContext);
+            FormUploadFilePath filePathClass = new FormUploadFilePath(mContext);
             String path = filePathClass.getFilePath(uri);
             File file = new File(path);
             String filename = path.substring(path.lastIndexOf("/") + 1);
@@ -229,16 +229,16 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
             }
 
             // apiCall to upload profile image and get url
-//            if (Utils.isNetworkAvailable(mContext)) {
+//            if (FormUtils.isNetworkAvailable(mContext)) {
 //                mAttachment_name_tv.setText(filename);
-                //uploadProfileImage(file, filename);
+            //uploadProfileImage(file, filename);
 //                if (attachmentImageView != null) {
-//                    ServiceUtils.setImageBackground(mContext, attachmentImageView, true);
+//                    FormServiceUtils.setImageBackground(mContext, attachmentImageView, true);
 //                }
 //                hashMap.put(upload_key_tv, filename);
 //                isManadatory.put(upload_key_tv, "false");
 //            } else {
-//                Utils.toast(getResources().getString(R.string.nointernet), mContext);
+//                FormUtils.toast(getResources().getString(R.string.nointernet), mContext);
 //            }
         }
 // else if (requestCode == 3210) {
@@ -298,7 +298,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
 //                }
 //            } else {
 //                // To get selected path...
-//                UploadFilePath filePathClass = new UploadFilePath(mContext);
+//                FormUploadFilePath filePathClass = new FormUploadFilePath(mContext);
 //                String path = filePathClass.getFilePath(uri);
 //                file = new File(path);
 //                filename = path.substring(path.lastIndexOf("/") + 1);
@@ -311,7 +311,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
 //                hashMapFile.put(filename, file);
 //
 //                if (attachmentImageView != null) {
-//                    ServiceUtils.setImageBackground(mContext, attachmentImageView, true);
+//                    FormServiceUtils.setImageBackground(mContext, attachmentImageView, true);
 //                }
 //                hashMap.put(upload_key_tv, filename);
 //                isManadatory.put(upload_key_tv, "false");
@@ -319,7 +319,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
 //            } else {
 //                photoFile = null;
 //                mCurrentPhotoPath = "";
-//                Utils.toast("Please Try Again.", mContext);
+//                FormUtils.toast("Please Try Again.", mContext);
 //            }
 //        } else if (requestCode == IMAGE_CAMERA) {
 //            if (photoFile != null && !mCurrentPhotoPath.equalsIgnoreCase("")) {
@@ -331,17 +331,17 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
 //                isManadatory.put(upload_key_tv, "false");
 //
 //                if (attachmentImageView != null) {
-//                    ServiceUtils.setImageBackground(mContext, attachmentImageView, true);
+//                    FormServiceUtils.setImageBackground(mContext, attachmentImageView, true);
 //                }
 //                // uploadProfileImage(photoFile, filename);
 //            } else {
-//                Utils.toast("Please Try Again.", mContext);
+//                FormUtils.toast("Please Try Again.", mContext);
 //            }
 // }
         else if (requestCode == ImagePicker.IMAGE_PICKER_REQUEST_CODE && resultCode == RESULT_OK) {
             List<String> mPaths = (List<String>) data.getSerializableExtra(ImagePicker.EXTRA_IMAGE_PATH);
             if (mPaths.size() == 0) {
-                Utils.toast("Please Try Again.", mContext);
+                FormUtils.toast("Please Try Again.", mContext);
                 return;
             }
 
@@ -362,7 +362,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
 //                    //  uploadProfileImage(file, filename);
 //
 //                    if (attachmentImageView != null) {
-//                        ServiceUtils.setImageBackground(mContext, attachmentImageView, true);
+//                        FormServiceUtils.setImageBackground(mContext, attachmentImageView, true);
 //                    }
 //                    hashMap.put(upload_key_tv, filename);
 //                    isManadatory.put(upload_key_tv, "false");
@@ -376,7 +376,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
             Log.e("this is images selected", ">>>>>>>>" + mPaths);
         }
 //        else if (requestCode == INT_REQ_CODE_SIGNATURE_PAD && resultCode == Activity.RESULT_OK) {
-//            //Utils.loadImage(mContext, data.getStringExtra("file"), signatureImageView);
+//            //FormUtils.loadImage(mContext, data.getStringExtra("file"), signatureImageView);
 //            if (!TextUtils.isEmpty(data.getStringExtra("file"))) {
 //                Bitmap bitmap = BitmapFactory.decodeFile(data.getStringExtra("file"));
 //                signatureImageView.setImageBitmap(bitmap);
@@ -392,27 +392,27 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
     }
 
     @Override
-    public void onResponse(ArrayList<ServiceFieldsDto> serviceFieldsDtos) {
-        if (serviceFieldsDtos.size() > 0) {
-            saleRegisterListener.setLayout(serviceFieldsDtos);
+    public void onResponse(ArrayList<FormServiceFieldsDto> formServiceFieldsDtos) {
+        if (formServiceFieldsDtos.size() > 0) {
+            saleRegisterListener.setLayout(formServiceFieldsDtos);
         }
     }
 
-    String getDependencyNameList(ArrayList<ServiceFieldsDto> serviceFieldsDtos, String tagName) {
-        for (int i = 0; i < serviceFieldsDtos.size(); i++) {
-            String name = serviceFieldsDtos.get(i).getName();
+    String getDependencyNameList(ArrayList<FormServiceFieldsDto> formServiceFieldsDtos, String tagName) {
+        for (int i = 0; i < formServiceFieldsDtos.size(); i++) {
+            String name = formServiceFieldsDtos.get(i).getName();
             if (name.equalsIgnoreCase(tagName)) {
-                return serviceFieldsDtos.get(i).getDependentFields();
+                return formServiceFieldsDtos.get(i).getDependentFields();
             }
         }
         return "";
     }
 
-    DependentDTO checkDependency(ArrayList<DependentDTO> dependentDTOS, String tagName) {
-        for (int i = 0; i < dependentDTOS.size(); i++) {
-            DependentDTO dependentDTO = dependentDTOS.get(i);
-            if (dependentDTO.getDependentName().equalsIgnoreCase(tagName)) {
-                return dependentDTO;
+    FormDependentDTO checkDependency(ArrayList<FormDependentDTO> formDependentDTOS, String tagName) {
+        for (int i = 0; i < formDependentDTOS.size(); i++) {
+            FormDependentDTO formDependentDTO = formDependentDTOS.get(i);
+            if (formDependentDTO.getDependentName().equalsIgnoreCase(tagName)) {
+                return formDependentDTO;
             }
         }
         return null;
@@ -464,7 +464,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                 //   new UpdateProfile().updateProfileFields(mContext, jObjContent);
+                    //   new UpdateProfile().updateProfileFields(mContext, jObjContent);
 
                 } else {
                     postJob(postType, hashMap);
@@ -477,6 +477,8 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
     private void postJob(String postType, final HashMap<String, String> hashMap) {
 
         try {
+            addAllFiles();
+
             JSONArray jArrayList = new JSONArray();
             JSONObject jObjContent = new JSONObject();
             JSONObject jObjList = new JSONObject();
@@ -493,10 +495,10 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
             hashMapString.put("dt", "CAMPAIGNS");
             hashMapString.put("category", "Products");
 
-            hashMapString.put("userId", OnGoConstants.getMallId());
-            hashMapString.put("consumerEmail", OnGoConstants.getConsumerEmail()); //as user sign up by mobileNumber and postfix as '@ongo.com'.
+            hashMapString.put("userId", FormConstants.getMallId());
+            hashMapString.put("consumerEmail", FormConstants.getConsumerEmail()); //as user sign up by mobileNumber and postfix as '@ongo.com'.
 
-            new APICall(OnGoConstants.postServices(), hashMapFile, hashMapString, mContext, new APICall.APIResponse() {
+            new FormAPICall(FormConstants.postServices(), hashMapFile, hashMapString, mContext, new FormAPICall.APIResponse() {
                 @Override
                 public void onResponse(String result) {
 
@@ -524,7 +526,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
     private void uploadMultipleImages(HashMap<String, File> fileHashMapFiles, String jobId, boolean isItemCode) {
         HashMap<String, String> filehashmap = new HashMap<>();
         filehashmap.put("jobId", jobId);
-        filehashmap.put("orgId", OnGoConstants.getMallId());
+        filehashmap.put("orgId", FormConstants.getMallId());
         Log.e("fileHashMapFiles", ">>>>>>>>.." + fileHashMapFiles);
         if (isItemCode) {
             deleteAttachments(jobId, fileHashMapFiles, filehashmap);
@@ -535,11 +537,11 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
 
 
     private void uploadAttachments(final HashMap<String, File> fileHashMapFiles, final HashMap<String, String> fileHashMap) {
-        new APICall(OnGoConstants.uploadAttachments(), fileHashMapFiles, fileHashMap, mContext, new APICall.APIResponse() {
+        new FormAPICall(FormConstants.uploadAttachments(), fileHashMapFiles, fileHashMap, mContext, new FormAPICall.APIResponse() {
             @Override
             public void onResponse(String result) {
                 if (result == null || result.equalsIgnoreCase("")) {
-                    Utils.toast("Could not upload your images", mContext);
+                    FormUtils.toast("Could not upload your images", mContext);
                 } else {
                     ArrayList<String> arry = new ArrayList<>();
                     try {
@@ -562,12 +564,12 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
     }
 
     private void deleteAttachments(String jobId, final HashMap<String, File> fileHashMapFiles, final HashMap<String, String> fileHashMap) {
-        String url = OnGoConstants.deleteAllAttachments() + "jobId=" + jobId;
-        new APICall(url, fileHashMapFiles, fileHashMap, mContext, new APICall.APIResponse() {
+        String url = FormConstants.deleteAllAttachments() + "jobId=" + jobId;
+        new FormAPICall(url, fileHashMapFiles, fileHashMap, mContext, new FormAPICall.APIResponse() {
             @Override
             public void onResponse(String result) {
                 if (result == null || result.equalsIgnoreCase("")) {
-                    Utils.toast("Could not upload your images", mContext);
+                    FormUtils.toast("Could not upload your images", mContext);
                 } else {
                     ArrayList<String> arry = new ArrayList<>();
                     try {
@@ -600,8 +602,8 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
                 //based on you key types
                 String keyStr = keySet.next();
                 Object keyValue = jsonObject.get(keyStr);
-                if (Utils.checkType(keyStr)) {
-                    map.put(keyStr, Utils.removeBracket(String.valueOf(keyValue)));
+                if (FormUtils.checkType(keyStr)) {
+                    map.put(keyStr, FormUtils.removeBracket(String.valueOf(keyValue)));
                 }
             }
 
@@ -619,8 +621,8 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
             JSONArray jsonArray = jsonObject.getJSONArray("Attachments");
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject innerObject = jsonArray.getJSONObject(i);
-                String keyName = Utils.checkJsonObjStr(innerObject, "Image_Name");
-                String keyValue = Utils.checkJsonObjStr(innerObject, "URL");
+                String keyName = FormUtils.checkJsonObjStr(innerObject, "Image_Name");
+                String keyValue = FormUtils.checkJsonObjStr(innerObject, "URL");
                 map.put(keyName, keyValue);
             }
             return map;
@@ -645,12 +647,26 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
     }
 
 
+    void addAllFiles() {
+        if (photosArray != null && photosArray.size() > 0) {
+            for (String filePath : photosArray) {
+                File file = new File(filePath);
+                String filename = filePath.substring(filePath.lastIndexOf("/") + 1);
+                hashMapFile.put(filename, file);
+            }
+        }
+    }
+
+    void setPhotosArray(ArrayList<String> filePaths) {
+        photosArray = filePaths;
+    }
+
     interface ServiceFormListener {
         void onResponse(String status);
 
         void onImageSelected(ArrayList<String> imagesList);
 
-        void setLayout(ArrayList<ServiceFieldsDto> serviceFieldsDtos);
+        void setLayout(ArrayList<FormServiceFieldsDto> formServiceFieldsDtos);
 
         void showMessage(String msg);
     }

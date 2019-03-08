@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.ongo.dynamicformlibrary.DynamicServiceForm;
-import com.ongo.dynamicformlibrary.utils.AlertDialogsUtils;
+import com.ongo.dynamicformlibrary.utils.FormAlertDialogsUtils;
 
 public class MainActivity extends AppCompatActivity implements DynamicServiceForm.DynamicServiceFormListener {
 
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements DynamicServiceFor
     @Override
     public void onSuccess(String status) {
         if (status.equalsIgnoreCase("1")) {
-            AlertDialogsUtils.showCustomAlertDialog(context, com.ongo.dynamicformlibrary.R.layout.thank_you_dialog_fragment, false, new AlertDialogsUtils.CustomAlertInterface() {
+            FormAlertDialogsUtils.showCustomAlertDialog(context, com.ongo.dynamicformlibrary.R.layout.thank_you_dialog_fragment, false, new FormAlertDialogsUtils.CustomAlertInterface() {
                 @Override
                 public void setListenerCustomAlert(View alertView, final AlertDialog alertDialog) {
 //                    ImageView cancel_action = alertView.findViewById(R.id.cancel_action);

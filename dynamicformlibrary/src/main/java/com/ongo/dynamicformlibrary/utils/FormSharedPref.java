@@ -5,19 +5,19 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 
-public class SharedPref {
+public class FormSharedPref {
     private static SharedPreferences mSharedPref;
     private static Context mContext;
 
     public static void init(Context context) {
         mContext=context;
         if (mSharedPref == null)
-            mSharedPref = context.getSharedPreferences(OnGoConstants.PREF_NAME, Activity.MODE_PRIVATE);
+            mSharedPref = context.getSharedPreferences(FormConstants.PREF_NAME, Activity.MODE_PRIVATE);
     }
 
     public static String read(String key, String defValue) {
         if (mSharedPref == null)
-            mSharedPref = mContext.getSharedPreferences(OnGoConstants.PREF_NAME, Activity.MODE_PRIVATE);
+            mSharedPref = mContext.getSharedPreferences(FormConstants.PREF_NAME, Activity.MODE_PRIVATE);
 
         return mSharedPref.getString(key, defValue);
     }
@@ -32,7 +32,7 @@ public class SharedPref {
 
 
         if (mSharedPref == null)
-            mSharedPref = mContext.getSharedPreferences(OnGoConstants.PREF_NAME, Activity.MODE_PRIVATE);
+            mSharedPref = mContext.getSharedPreferences(FormConstants.PREF_NAME, Activity.MODE_PRIVATE);
 
         return mSharedPref.getBoolean(key, defValue);
     }
