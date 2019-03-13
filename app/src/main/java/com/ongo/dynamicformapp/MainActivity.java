@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements DynamicServiceFor
                  getting and setting the form by using post type
                  jobObj is for editing. and it can be null
                  =========== */
-                dynamicServiceForm.getForm(postType, jobObj);
+                dynamicServiceForm.getForm(postType,"CAMPAIGNS", jobObj);
 //                startActivity(new Intent(MainActivity.this, ServiceFormActivity.class));
             }
         });
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements DynamicServiceFor
     will be update in server and set status here.
     =========== */
     @Override
-    public void onSuccess(String status) {
+    public void onSuccess(String status, String result) {
         if (status.equalsIgnoreCase("1")) {
             FormAlertDialogsUtils.showCustomAlertDialog(context, com.ongo.dynamicformlibrary.R.layout.thank_you_dialog_fragment, false, new FormAlertDialogsUtils.CustomAlertInterface() {
                 @Override

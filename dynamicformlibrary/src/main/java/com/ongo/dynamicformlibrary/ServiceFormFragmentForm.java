@@ -98,6 +98,7 @@ public class ServiceFormFragmentForm extends FormBaseFragment implements Service
     private RecyclerView photosRV;
     private PhotosAdapter photosAdapter;
     private ArrayList<String> photos;
+    private String dt;
 
     @SuppressLint("ValidFragment")
     public ServiceFormFragmentForm(DynamicServiceForm.DynamicServiceFormListener dynamicServiceFormListener) {
@@ -129,12 +130,13 @@ public class ServiceFormFragmentForm extends FormBaseFragment implements Service
         if (bundle != null) {
             postType = bundle.getString(FormConstants.postType);
             itemJob = bundle.getString(FormConstants.jobObj);
+            dt = bundle.getString(FormConstants.dt);
             if (itemJob != null) {
                 FormConstants.editFieldsHASHMAP = serviceFormPresenter.getHashMap(itemJob);
                 FormConstants.editFieldsImagesHashMap = serviceFormPresenter.getImagesHashMap(itemJob);
             }
         }
-        serviceFormPresenter.getServiceFields(FormConstants.getHostUrl(), postType, FormConstants.mallId);
+        serviceFormPresenter.getServiceFields(FormConstants.getHostUrl(), postType, FormConstants.mallId,dt);
 
         return view;
     }
@@ -160,9 +162,9 @@ public class ServiceFormFragmentForm extends FormBaseFragment implements Service
     }
 
     @Override
-    public void onResponse(String status) {
+    public void onResponse(String status, String result) {
         if (dynamicServiceFormListener != null) {
-            dynamicServiceFormListener.onSuccess(status);
+            dynamicServiceFormListener.onSuccess(status,result);
         } else {
             FormUtils.toast("Something went wrong with listener.", mContext);
         }

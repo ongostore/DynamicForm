@@ -13,6 +13,7 @@ public class FormConstants {
     public static HashMap<String, String> editFieldsImagesHashMap = new HashMap<>();
     public static final String postType = "postType";
     public static String jobObj = "jobObj";
+    public static String dt = "dt";
 
     public static String mallId;
     private static String consumerEmail;

@@ -163,7 +163,7 @@ public class ServiceFormActivityForm extends FormBaseActivity implements Service
     }
 
     @Override
-    public void onResponse(String status) {
+    public void onResponse(String status, String result) {
         if (status.equalsIgnoreCase("1")) {
             FormAlertDialogsUtils.showCustomAlertDialog(mContext, R.layout.thank_you_dialog_fragment, false, new FormAlertDialogsUtils.CustomAlertInterface() {
                 @Override

@@ -387,8 +387,8 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
 //        }
     }
 
-    void getServiceFields(String baseUrl, String postType, String mallId) {
-        serviceFormDataSource.getServiceFields(baseUrl, postType, mallId);
+    void getServiceFields(String baseUrl, String postType, String mallId,String dt) {
+        serviceFormDataSource.getServiceFields(baseUrl, postType, mallId,dt);
     }
 
     @Override
@@ -510,7 +510,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
                             if (hashMapFile.size() > 0) {
                                 uploadMultipleImages(hashMapFile, jobId, hashMap.containsKey("ItemCode"));
                             } else {
-                                saleRegisterListener.onResponse("1");
+                                saleRegisterListener.onResponse("1", result);
                             }
                         } catch (Exception e) {
                             Log.e("exp e is", ">>>>>>>>>.." + e.getLocalizedMessage());
@@ -554,7 +554,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
 //                                arry.add(imageUrl);
 //                            }
 //                        }
-                        saleRegisterListener.onResponse(status);
+                        saleRegisterListener.onResponse(status, result);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -583,7 +583,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
 //                                arry.add(imageUrl);
 //                            }
                         }
-                        saleRegisterListener.onResponse(status);
+                        saleRegisterListener.onResponse(status,result);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -662,7 +662,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
     }
 
     interface ServiceFormListener {
-        void onResponse(String status);
+        void onResponse(String status, String result);
 
         void onImageSelected(ArrayList<String> imagesList);
 

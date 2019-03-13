@@ -33,13 +33,13 @@ class ServiceFormDataSource {
         this.sourceListener = sourceListener;
     }
 
-    void getServiceFields(String baseUrl, String postType, String mallId) {
+    void getServiceFields(String baseUrl, String postType, String mallId,String dt) {
         FormWebServices ws = new FormWebServices(mContext);
         String url = /*FormUtils.getBaseUrl(mContext)*/ baseUrl+ "/Services/getMasters";
         RequestParams params = new RequestParams();
         params.put("type", "allJobTypes|"+postType);
         params.put("mallId", mallId); //FormUtils.getMallId(mContext));
-        params.put("dt", "CAMPAIGNS");
+        params.put("dt", dt);
         ws.invokeWebService(params, url, true, new FormWebServices.WSResponse() {
             @Override
             public void onResponse(boolean success, String response) {
