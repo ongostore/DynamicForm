@@ -98,7 +98,7 @@ public class ServiceFormFragmentForm extends FormBaseFragment implements Service
     private RecyclerView photosRV;
     private PhotosAdapter photosAdapter;
     private ArrayList<String> photos;
-    private String dt;
+    private String dt,category;
 
     @SuppressLint("ValidFragment")
     public ServiceFormFragmentForm(DynamicServiceForm.DynamicServiceFormListener dynamicServiceFormListener) {
@@ -131,6 +131,7 @@ public class ServiceFormFragmentForm extends FormBaseFragment implements Service
             postType = bundle.getString(FormConstants.postType);
             itemJob = bundle.getString(FormConstants.jobObj);
             dt = bundle.getString(FormConstants.dt);
+            category = bundle.getString(FormConstants.category);
             if (itemJob != null) {
                 FormConstants.editFieldsHASHMAP = serviceFormPresenter.getHashMap(itemJob);
                 FormConstants.editFieldsImagesHashMap = serviceFormPresenter.getImagesHashMap(itemJob);
@@ -759,7 +760,7 @@ public class ServiceFormFragmentForm extends FormBaseFragment implements Service
 //            hashMap.put("Price Without Fuel", withoutFuel.getText().toString());
 //            hashMap.put("Price", price.getText().toString());
             serviceFormPresenter.setPhotosArray(photos);
-            serviceFormPresenter.checkValidation(postType, hashMap, isManadatory);
+            serviceFormPresenter.checkValidation(postType, hashMap, isManadatory,dt,category);
         }
 
 

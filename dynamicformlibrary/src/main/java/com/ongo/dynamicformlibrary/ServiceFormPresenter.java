@@ -419,7 +419,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
     }
 
 
-    void checkValidation(String postType, HashMap<String, String> hashMap, HashMap<String, String> isManadatory) {
+    void checkValidation(String postType, HashMap<String, String> hashMap, HashMap<String, String> isManadatory,String dt,String category) {
         if (hashMap.size() > 0) {
             boolean isMan = false;
             for (String key : hashMap.keySet()) {
@@ -467,14 +467,14 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
                     //   new UpdateProfile().updateProfileFields(mContext, jObjContent);
 
                 } else {
-                    postJob(postType, hashMap);
+                    postJob(postType, hashMap,dt,category);
                 }
             }
         }
     }
 
 
-    private void postJob(String postType, final HashMap<String, String> hashMap) {
+    private void postJob(String postType, final HashMap<String, String> hashMap,String dt,String category) {
 
         try {
             addAllFiles();
@@ -492,8 +492,8 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
             HashMap<String, String> hashMapString = new HashMap<>();
             hashMapString.put("type", postType);
             hashMapString.put("json", jObjList.toString());
-            hashMapString.put("dt", "CAMPAIGNS");
-            hashMapString.put("category", "Products");
+            hashMapString.put("dt", dt);
+            hashMapString.put("category", category);
 
             hashMapString.put("userId", FormConstants.getMallId());
             hashMapString.put("consumerEmail", FormConstants.getConsumerEmail()); //as user sign up by mobileNumber and postfix as '@ongo.com'.

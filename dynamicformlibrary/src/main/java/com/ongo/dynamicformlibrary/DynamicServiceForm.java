@@ -40,8 +40,8 @@ public class DynamicServiceForm {
      * @param itemJobObj if data is already present (for edit mode)
      * @param dt data table name (ex: CAMPAIGNS)
      */
-    public void getForm(String postType,String dt, String itemJobObj) {
-        createFragment(postType,dt, itemJobObj);
+    public void getForm(String postType,String dt,String category, String itemJobObj) {
+        createFragment(postType,dt,category, itemJobObj);
     }
 
     /**
@@ -71,11 +71,12 @@ public class DynamicServiceForm {
      * @param itemJobObj if data is already present (for edit mode)
      *                   after getting form by using post. setting the view.
      */
-    private void createFragment(String postType,String dt, String itemJobObj) {
+    private void createFragment(String postType,String dt,String category, String itemJobObj) {
         ServiceFormFragmentForm serviceFormFragment = new ServiceFormFragmentForm(dynamicServiceFormListener);
         Bundle bundle = new Bundle();
         bundle.putString(FormConstants.postType, postType);
         bundle.putString(FormConstants.dt, dt);
+        bundle.putString(FormConstants.category, category);
         if (!TextUtils.isEmpty(itemJobObj)) {
             bundle.putString(FormConstants.jobObj, itemJobObj);
         }

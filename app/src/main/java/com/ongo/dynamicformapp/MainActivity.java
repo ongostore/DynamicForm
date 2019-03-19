@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements DynamicServiceFor
                  getting and setting the form by using post type
                  jobObj is for editing. and it can be null
                  =========== */
-                dynamicServiceForm.getForm(postType,"CAMPAIGNS", jobObj);
+                dynamicServiceForm.getForm(postType, "CAMPAIGNS", "Products", jobObj);
 //                startActivity(new Intent(MainActivity.this, ServiceFormActivity.class));
             }
         });

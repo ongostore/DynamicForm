@@ -17,6 +17,7 @@ public class FormConstants {
 
     public static String mallId;
     private static String consumerEmail;
+    public static String category="category";
 
 
     public static String uploadAttachments() {
