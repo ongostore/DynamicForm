@@ -13,6 +13,8 @@ import android.text.TextUtils;
 
 import com.ongo.dynamicformlibrary.utils.FormConstants;
 
+import java.util.HashMap;
+
 public class DynamicServiceForm {
 
     private FragmentActivity activity;
@@ -24,9 +26,10 @@ public class DynamicServiceForm {
      * @param contentFrame               layout id to set UI(ex: R.id.contentFrame)
      * @param baseUrl                    IP address for the api call(ex: 123.123.123.123:8081)
      * @param mallId                     from with mall, required the data (ex: 46)
+     * @param customValues
      * @param dynamicServiceFormListener for sending status.
      */
-    public DynamicServiceForm(FragmentActivity activity, int contentFrame, String baseUrl, String mallId, String consumerEmail,String userId, DynamicServiceFormListener dynamicServiceFormListener) {
+    public DynamicServiceForm(FragmentActivity activity, int contentFrame, String baseUrl, String mallId, String consumerEmail, String userId, HashMap<String, String> customValues, DynamicServiceFormListener dynamicServiceFormListener) {
         this.activity = activity;
         this.contentFrame = contentFrame;
         this.dynamicServiceFormListener = dynamicServiceFormListener;
@@ -34,15 +37,16 @@ public class DynamicServiceForm {
         FormConstants.setConsumerEmail(consumerEmail);
         FormConstants.setMallId(mallId);
         FormConstants.setUserId(userId);
+        FormConstants.customValues = customValues;
     }
 
     /**
      * @param postType   the type of for required (ex: "Posts")
      * @param itemJobObj if data is already present (for edit mode)
-     * @param dt data table name (ex: CAMPAIGNS)
+     * @param dt         data table name (ex: CAMPAIGNS)
      */
-    public void getForm(String postType,String dt,String category, String itemJobObj) {
-        createFragment(postType,dt,category, itemJobObj);
+    public void getForm(String postType, String dt, String category, String itemJobObj) {
+        createFragment(postType, dt, category, itemJobObj);
     }
 
     /**
@@ -72,7 +76,7 @@ public class DynamicServiceForm {
      * @param itemJobObj if data is already present (for edit mode)
      *                   after getting form by using post. setting the view.
      */
-    private void createFragment(String postType,String dt,String category, String itemJobObj) {
+    private void createFragment(String postType, String dt, String category, String itemJobObj) {
         ServiceFormFragmentForm serviceFormFragment = new ServiceFormFragmentForm(dynamicServiceFormListener);
         Bundle bundle = new Bundle();
         bundle.putString(FormConstants.postType, postType);
@@ -82,7 +86,7 @@ public class DynamicServiceForm {
             bundle.putString(FormConstants.jobObj, itemJobObj);
         }
         serviceFormFragment.setArguments(bundle);
-        boolean isInit =false;
+        boolean isInit = false;
         startTransaction(activity, isInit, contentFrame, serviceFormFragment, postType);
     }
 

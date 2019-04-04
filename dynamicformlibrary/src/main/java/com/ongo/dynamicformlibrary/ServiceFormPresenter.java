@@ -91,8 +91,8 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
     }
 
 
-    void getServiceFields(String baseUrl, String postType, String mallId,String dt) {
-        serviceFormDataSource.getServiceFields(baseUrl, postType, mallId,dt);
+    void getServiceFields(String baseUrl, String postType, String mallId, String dt) {
+        serviceFormDataSource.getServiceFields(baseUrl, postType, mallId, dt);
     }
 
     @Override
@@ -123,7 +123,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
     }
 
 
-    void checkValidation(String postType, HashMap<String, String> hashMap, HashMap<String, String> isManadatory,String dt,String category) {
+    void checkValidation(String postType, HashMap<String, String> hashMap, HashMap<String, String> isManadatory, String dt, String category) {
         if (hashMap.size() > 0) {
             boolean isMan = false;
             for (String key : hashMap.keySet()) {
@@ -171,14 +171,14 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
                     //   new UpdateProfile().updateProfileFields(mContext, jObjContent);
 
                 } else {
-                    postJob(postType, hashMap,dt,category);
+                    postJob(postType, hashMap, dt, category);
                 }
             }
         }
     }
 
 
-    private void postJob(String postType, final HashMap<String, String> hashMap,String dt,String category) {
+    private void postJob(String postType, final HashMap<String, String> hashMap, String dt, String category) {
 
         try {
             addAllFiles();
@@ -190,6 +190,13 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
             for (String key : hashMap.keySet()) {
                 jObjContent.put(key, hashMap.get(key));
             }
+            //if user wants to add any key values inside json object
+            if (FormConstants.customValues != null && FormConstants.customValues.size() > 0) {
+                for (String key : FormConstants.customValues.keySet()) {
+                    jObjContent.put(key, FormConstants.customValues.get(key));
+                }
+            }
+
             jArrayList.put(jObjContent);
             jObjList.put("list", jArrayList);
 
@@ -287,7 +294,7 @@ class ServiceFormPresenter implements ServiceFormDataSource.SaleRegisterDataSour
 //                                arry.add(imageUrl);
 //                            }
                         }
-                        saleRegisterListener.onResponse(status,result);
+                        saleRegisterListener.onResponse(status, result);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

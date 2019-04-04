@@ -11,6 +11,7 @@ public class FormConstants {
     public static String server;
     public static HashMap<String, String> editFieldsHASHMAP = new HashMap<>();
     public static HashMap<String, String> editFieldsImagesHashMap = new HashMap<>();
+    public static HashMap<String,String> customValues=null;
     public static final String postType = "postType";
     public static String jobObj = "jobObj";
     public static String dt = "dt";

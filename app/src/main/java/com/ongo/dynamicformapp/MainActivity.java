@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.ongo.dynamicformlibrary.DynamicServiceForm;
 import com.ongo.dynamicformlibrary.utils.FormAlertDialogsUtils;
 
+import java.util.HashMap;
+
 public class MainActivity extends AppCompatActivity implements DynamicServiceForm.DynamicServiceFormListener {
 
     Context context;
@@ -26,7 +28,10 @@ public class MainActivity extends AppCompatActivity implements DynamicServiceFor
         /* ===========
         Initializing the Dynamic Service Form
         =========== */
-        dynamicServiceForm = new DynamicServiceForm(this, R.id.container, "http://149.129.138.145:8081", "46", "9989177604@ongo.com","", this);
+
+        HashMap<String,String> customValues=new HashMap<>();
+
+        dynamicServiceForm = new DynamicServiceForm(this, R.id.container, "http://149.129.138.145:8081", "46", "9989177604@ongo.com","",customValues, this);
 
         findViewById(R.id.launchDynamicFormBTN).setOnClickListener(new View.OnClickListener() {
             @Override
