@@ -16,6 +16,16 @@ public class FormConstants {
     public static String dt = "dt";
 
     public static String mallId;
+
+    public static String getUserId() {
+        return userId;
+    }
+
+    public static void setUserId(String userId) {
+        FormConstants.userId = userId;
+    }
+
+    public static String userId;
     private static String consumerEmail;
     public static String category="category";
 

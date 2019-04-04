@@ -26,13 +26,14 @@ public class DynamicServiceForm {
      * @param mallId                     from with mall, required the data (ex: 46)
      * @param dynamicServiceFormListener for sending status.
      */
-    public DynamicServiceForm(FragmentActivity activity, int contentFrame, String baseUrl, String mallId, String consumerEmail, DynamicServiceFormListener dynamicServiceFormListener) {
+    public DynamicServiceForm(FragmentActivity activity, int contentFrame, String baseUrl, String mallId, String consumerEmail,String userId, DynamicServiceFormListener dynamicServiceFormListener) {
         this.activity = activity;
         this.contentFrame = contentFrame;
         this.dynamicServiceFormListener = dynamicServiceFormListener;
         FormConstants.setHostUrl(baseUrl);
         FormConstants.setConsumerEmail(consumerEmail);
         FormConstants.setMallId(mallId);
+        FormConstants.setUserId(userId);
     }
 
     /**
