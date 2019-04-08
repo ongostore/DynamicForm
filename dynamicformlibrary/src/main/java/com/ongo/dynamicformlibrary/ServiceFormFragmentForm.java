@@ -439,7 +439,6 @@ public class ServiceFormFragmentForm extends FormBaseFragment implements Service
                 linearLayout.addView(innerLinearLayout, params);
             } else if (formServiceFieldsDto.getType().equalsIgnoreCase("Date")) {
 
-
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 LinearLayout innerLinearLayout = FormServiceUtils.getDateTimeView(mandatory, mContext, params, tagName, "Date", new FormServiceUtils.DateTimeInterface() {
                     @Override
@@ -450,12 +449,21 @@ public class ServiceFormFragmentForm extends FormBaseFragment implements Service
                         imageView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                FormServiceUtils.showDatePicker(mContext, new FormServiceUtils.DatePickerInterface() {
-                                    @Override
-                                    public void datePickerInterface(String date) {
-                                        textView.setText(date);
-                                    }
-                                });
+                                if (tagName.equalsIgnoreCase("DOB")) {
+                                    FormUtils.showDateOfBirthPicker(mContext, 0, new FormUtils.DatePickerInterface() {
+                                        @Override
+                                        public void datePickerInterface(String date) {
+                                            textView.setText(date);
+                                        }
+                                    });
+                                } else {
+                                    FormServiceUtils.showDatePicker(mContext, new FormServiceUtils.DatePickerInterface() {
+                                        @Override
+                                        public void datePickerInterface(String date) {
+                                            textView.setText(date);
+                                        }
+                                    });
+                                }
                             }
                         });
                     }
