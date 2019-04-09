@@ -3,41 +3,56 @@
     android:id="@+id/ll"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/margin_size_10"
-    android:layout_marginEnd="@dimen/margin_size_10"
-    android:layout_marginTop="@dimen/margin_size_5"
-    android:layout_marginBottom="@dimen/margin_size_5"
     android:background="@color/almost_white"
-    android:orientation="horizontal"
-    android:weightSum="1">
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textview"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/margin_size_45"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        android:hint="@string/_null"
-        android:maxLines="1"
-        android:minLines="1"
-        android:layout_weight="0.9"
-        android:padding="@dimen/margin_size_10"
-        android:layout_marginStart="@dimen/margin_size_5"
+        android:id="@+id/hintview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_size_10"
         android:layout_marginTop="@dimen/margin_size_5"
-        android:layout_marginBottom="@dimen/margin_size_5"
-        android:textColor="@color/black"
-        android:textColorHint="@color/serv_text_date_bg"
+        android:hint="@string/_null"
         android:textSize="@dimen/text_size_16" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_size_5"
+        android:layout_marginEnd="@dimen/margin_size_10"
         android:layout_marginTop="@dimen/margin_size_5"
-        android:padding="@dimen/margin_size_5"
-        android:layout_weight="0.2"
-        android:background="@color/white"
-        android:src="@drawable/ic_calendar_with_a_clock_time_tools" />
+        android:background="@color/almost_white"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/textview"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin_size_45"
+            android:layout_marginBottom="@dimen/margin_size_5"
+            android:layout_marginStart="@dimen/margin_size_5"
+            android:layout_marginTop="@dimen/margin_size_5"
+            android:layout_weight="0.9"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:hint="@string/_null"
+            android:maxLines="1"
+            android:minLines="1"
+            android:padding="@dimen/margin_size_10"
+            android:textColor="@color/black"
+            android:textColorHint="@color/serv_text_date_bg"
+            android:textSize="@dimen/text_size_16" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/margin_size_5"
+            android:layout_marginTop="@dimen/margin_size_5"
+            android:layout_weight="0.2"
+            android:background="@color/white"
+            android:padding="@dimen/margin_size_5"
+            android:src="@drawable/ic_calendar_with_a_clock_time_tools" />
+    </LinearLayout>
 </LinearLayout>

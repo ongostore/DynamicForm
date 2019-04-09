@@ -39,8 +39,8 @@ import com.ongo.dynamicformlibrary.form_utils.FormMyMap;
 import com.ongo.dynamicformlibrary.form_utils.FormServiceFieldsDto;
 import com.ongo.dynamicformlibrary.form_utils.FormServiceUtils;
 import com.ongo.dynamicformlibrary.utils.FormAlertDialogsUtils;
-import com.ongo.dynamicformlibrary.utils.FormFilePath;
 import com.ongo.dynamicformlibrary.utils.FormConstants;
+import com.ongo.dynamicformlibrary.utils.FormFilePath;
 import com.ongo.dynamicformlibrary.utils.FormUtils;
 
 import net.alhazmy13.mediapicker.Image.ImagePicker;
@@ -98,7 +98,7 @@ public class ServiceFormFragmentForm extends FormBaseFragment implements Service
     private RecyclerView photosRV;
     private PhotosAdapter photosAdapter;
     private ArrayList<String> photos;
-    private String dt,category;
+    private String dt, category;
 
     @SuppressLint("ValidFragment")
     public ServiceFormFragmentForm(DynamicServiceForm.DynamicServiceFormListener dynamicServiceFormListener) {
@@ -137,7 +137,7 @@ public class ServiceFormFragmentForm extends FormBaseFragment implements Service
                 FormConstants.editFieldsImagesHashMap = serviceFormPresenter.getImagesHashMap(itemJob);
             }
         }
-        serviceFormPresenter.getServiceFields(FormConstants.getHostUrl(), postType, FormConstants.mallId,dt);
+        serviceFormPresenter.getServiceFields(FormConstants.getHostUrl(), postType, FormConstants.mallId, dt);
 
         return view;
     }
@@ -165,7 +165,7 @@ public class ServiceFormFragmentForm extends FormBaseFragment implements Service
     @Override
     public void onResponse(String status, String result) {
         if (dynamicServiceFormListener != null) {
-            dynamicServiceFormListener.onSuccess(status,result);
+            dynamicServiceFormListener.onSuccess(status, result);
         } else {
             FormUtils.toast("Something went wrong with listener.", mContext);
         }
@@ -179,6 +179,7 @@ public class ServiceFormFragmentForm extends FormBaseFragment implements Service
     @Override
     public void setLayout(ArrayList<FormServiceFieldsDto> formServiceFieldsDtos) {
         this.formServiceFieldsDtos = formServiceFieldsDtos;
+        linearLayout.removeAllViews();
         addLayouts();
     }
 
@@ -413,6 +414,30 @@ public class ServiceFormFragmentForm extends FormBaseFragment implements Service
 //                    }
 //                });
 
+            } else if (formServiceFieldsDto.getType().equalsIgnoreCase("Dates_after_today")) {
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout innerLinearLayout = FormServiceUtils.getDateTimeView(mandatory, mContext, params, tagName, "DateTime", new FormServiceUtils.DateTimeInterface() {
+                    @Override
+                    public void dateTimeListener(final TextView textView, ImageView imageView) {
+                        if (textView != null) {
+                            textView.setInputType(InputType.TYPE_NULL);
+                        }
+
+                        imageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                FormUtils.showDateAfterTodayPicker(mContext, 0, new FormUtils.DatePickerInterface() {
+                                    @Override
+                                    public void datePickerInterface(String date) {
+                                        textView.setText(date);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+                linearLayout.addView(innerLinearLayout, params);
             } else if (formServiceFieldsDto.getType().equalsIgnoreCase("Date Time")) {
 
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -768,7 +793,7 @@ public class ServiceFormFragmentForm extends FormBaseFragment implements Service
 //            hashMap.put("Price Without Fuel", withoutFuel.getText().toString());
 //            hashMap.put("Price", price.getText().toString());
             serviceFormPresenter.setPhotosArray(photos);
-            serviceFormPresenter.checkValidation(postType, hashMap, isManadatory,dt,category);
+            serviceFormPresenter.checkValidation(postType, hashMap, isManadatory, dt, category);
         }
 
 

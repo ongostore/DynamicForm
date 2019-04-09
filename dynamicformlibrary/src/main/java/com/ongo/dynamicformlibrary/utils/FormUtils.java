@@ -445,4 +445,40 @@ public class FormUtils {
         datePickerDialog.getDatePicker().setMaxDate(c.getTimeInMillis());
         datePickerDialog.show();
     }
+    /**
+     * @param mContext            to initialize datePicker
+     * @param datePickerInterface to get selected date
+     */
+    public static void showDateAfterTodayPicker(final Context mContext, int noOfMaxYears, final DatePickerInterface datePickerInterface) {
+        int mYear, mMonth, mDay;
+
+        //setting the Locale for the issue M10 for Oct.
+        checkSetLocale(mContext);
+
+        final Calendar c = Calendar.getInstance();
+        mYear = c.get(Calendar.YEAR);
+        mMonth = c.get(Calendar.MONTH);
+        mDay = c.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(mContext, new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(year, monthOfYear, dayOfMonth);
+
+                SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+                String strDate = format.format(calendar.getTime());
+                String correctDate = checkLocaleExits(strDate);
+                datePickerInterface.datePickerInterface(correctDate);
+            }
+        }, mYear, mMonth, mDay);
+// Date date = new Date(selectedDate);
+        if (noOfMaxYears > 0) {
+            c.set(Calendar.YEAR, mYear + noOfMaxYears);
+        }
+        datePickerDialog.getDatePicker().setMinDate(c.getTimeInMillis());
+        datePickerDialog.show();
+    }
 }

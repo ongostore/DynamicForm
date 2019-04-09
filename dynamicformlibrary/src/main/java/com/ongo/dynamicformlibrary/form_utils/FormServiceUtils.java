@@ -522,9 +522,9 @@ public class FormServiceUtils {
         TextView textViewMain = view.findViewById(R.id.selectionView);
         textViewMain.setTag(tagName);
         if (mandatory.equalsIgnoreCase("true")) {
-            textViewMain.setHint(tagName + "*");
+            textViewMain.setHint("Select here" + "*");
         } else {
-            textViewMain.setHint(tagName);
+            textViewMain.setHint("Select here");
         }
 
         selectionInterface.selectionListener(isMultiset, stringArray, textViewMain);
@@ -543,9 +543,9 @@ public class FormServiceUtils {
         TextView textViewMain = view.findViewById(R.id.selectionView);
         textViewMain.setTag(tagName);
         if (mandatory.equalsIgnoreCase("true")) {
-            textViewMain.setHint(tagName + "*");
+            textViewMain.setHint("Select here" + "*");
         } else {
-            textViewMain.setHint(tagName);
+            textViewMain.setHint("Select here");
         }
 
         selectionInterface.selectionListener(isMultiset, keysArray, valuesArray, textViewMain);
@@ -559,9 +559,11 @@ public class FormServiceUtils {
 
         View view = LayoutInflater.from(mContext).inflate(R.layout.dateselectionview, null, false);
         LinearLayout ll = view.findViewById(R.id.ll);
+        TextView hintView = view.findViewById(R.id.hintview);
         TextView textView = view.findViewById(R.id.textview);
+        hintView.setHint(tagName);
         textView.setTag(tagName);
-        textView.setText(tagName);
+        textView.setHint("Select Date");
         ImageView imageView = view.findViewById(R.id.imageView);
 
         Drawable drawable;
