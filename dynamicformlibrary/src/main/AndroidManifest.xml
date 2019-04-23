@@ -11,11 +11,9 @@
     <uses-permission android:name="com.mapexplore.permission.MAPS_RECEIVE" />
     <uses-permission android:name="com.ongo.navigate_new.permission.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <application>
 
     </application>
